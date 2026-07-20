@@ -8,10 +8,11 @@
 - Keyboard/touch-friendly controls and one-action reset
 - Strict configurable development hosting and initial documentation
 
-## MVP 0.2 — Phases 2 and 3
+## MVP 0.2–0.3 — Scenario framework and controlled variety
 
 - [x] Add three curated scenarios and data-driven scenario selection
 - [x] Expand build-time schema/content validation
+- [x] Add seeded local variants, shuffled case order, benign regions, and a safe comparison case
 - Add optional timer/relaxed mode, sound-off default, and unobtrusive staff controls
 - Add prepared offline replay mode and staff scenario selection
 

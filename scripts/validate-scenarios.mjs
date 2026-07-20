@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 
 const scenarioDirectory = new URL("../src/scenarios/", import.meta.url);
-const ignoredFiles = new Set(["index.ts", "validate.ts"]);
+const ignoredFiles = new Set(["index.ts", "randomise.ts", "validate.ts"]);
 const fileNames = (await readdir(scenarioDirectory))
   .filter((name) => name.endsWith(".ts") && !name.endsWith(".test.ts") && !ignoredFiles.has(name));
 const sources = await Promise.all(fileNames.map(async (name) => ({ name, source: await readFile(new URL(name, scenarioDirectory), "utf8") })));
@@ -17,7 +17,7 @@ const forbidden = [
 ];
 
 const errors = [];
-if (sources.length < 4) errors.push(`Expected at least four scenario data files, found ${sources.length}.`);
+if (sources.length < 5) errors.push(`Expected at least five scenario family files, found ${sources.length}.`);
 
 for (const { name, source } of sources) {
   if (!/satisfies Scenario/.test(source)) errors.push(`${name}: scenario must satisfy the typed Scenario contract.`);

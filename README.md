@@ -6,10 +6,12 @@ response, and receive concise educational feedback.
 
 ## Status
 
-MVP 0.2 includes four curated fictional scenarios with data-driven selection:
-an urgent account email, campus Wi-Fi poster, internship direct message, and
-shared-document sign-in page. Every case supports clue selection, a safety
-decision, evidence reveal, educational scoring, and a clean one-action reset.
+MVP 0.3 includes five curated fictional scenario families with ten reviewed
+variants: an urgent account email, campus Wi-Fi poster, internship direct
+message, shared-document sign-in page, and a genuinely safe notification. Each
+round selects one local variant per family and shuffles the case order. Every case
+supports clue selection, false-positive explanations, a safety decision, evidence
+reveal, educational scoring, and a clean one-action reset.
 Timer, replay, staff controls, Playwright coverage, and burn-in testing are
 planned for later phases.
 
@@ -54,11 +56,12 @@ An event port must be recorded in the OpenDayOps registry and decisions log.
 
 ## Visitor and staff operation
 
-Choose one of four cases, flag suspicious regions, make a decision, review the
+Choose one of five cases, flag suspicious regions, make a decision, review the
 evidence, and view the result. **Reset for next visitor** or **Choose the next
 case** returns directly to the case list and clears all in-memory state. Refresh
-the page if the browser ever becomes unresponsive. Replay and dedicated staff
-controls are Phase 3 work.
+the page if the browser ever becomes unresponsive. Reset prepares another seeded
+local deck; no generated or downloaded scenario text is used. Replay and dedicated
+staff controls are Phase 3 work.
 
 ## Privacy and safety
 
@@ -67,6 +70,10 @@ contact details, passwords, or other personal information. Displayed URLs are
 inert text on reserved example domains. It has no analytics, tracking, network
 submission, active QR destination, or real login form. See
 [`docs/SAFETY_AND_PRIVACY.md`](docs/SAFETY_AND_PRIVACY.md).
+
+Randomness is limited to selecting and ordering reviewed local variants. The
+randomiser accepts a seed internally so tests and future prepared replay can
+reproduce an exact deck.
 
 ## Current limitations
 

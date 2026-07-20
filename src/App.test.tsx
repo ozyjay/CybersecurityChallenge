@@ -2,50 +2,77 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import App from "./App";
-import { scenarios } from "./scenarios";
+import { buildScenarioDeck, scenarios } from "./scenarios";
+
+const decisionButton = {
+  safe: /safe$/i,
+  suspicious: /suspicious$/i,
+  escalate: /report or escalate/i
+} as const;
+
+function seedForVariant(scenarioId: string): number {
+  for (let seed = 0; seed < 1000; seed += 1) {
+    if (buildScenarioDeck(seed).some((scenario) => scenario.id === scenarioId)) return seed;
+  }
+  throw new Error(`No deterministic seed found for ${scenarioId}`);
+}
 
 describe("visitor journeys", () => {
-  it.each(scenarios)("completes and resets $id", async (scenario) => {
+  it.each(scenarios)("completes curated variant $id", async (scenario) => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App seed={seedForVariant(scenario.id)} />);
     await user.click(screen.getByRole("button", { name: new RegExp(scenario.title, "i") }));
 
-    const clue = scenario.clues[0];
-    const clueButton = screen.getByRole("button", { name: new RegExp(clue.label, "i") });
-    await user.click(clueButton);
-    expect(clueButton).toHaveAttribute("aria-pressed", "true");
+    if (scenario.clues[0]) {
+      const clue = scenario.clues[0];
+      const clueButton = screen.getByRole("button", { name: new RegExp(clue.label, "i") });
+      await user.click(clueButton);
+      expect(clueButton).toHaveAttribute("aria-pressed", "true");
+    }
 
     await user.click(screen.getByRole("button", { name: /make my decision/i }));
-    await user.click(screen.getByRole("button", { name: /report or escalate/i }));
+    await user.click(screen.getByRole("button", { name: decisionButton[scenario.correctDecision] }));
     expect(screen.getByRole("heading", { name: /what the scenario was hiding/i })).toBeInTheDocument();
-    expect(screen.getByText(/you found this/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /see my result/i }));
     expect(screen.getByText(new RegExp(`out of ${scenario.clues.length * 10 + 20} points`, "i"))).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /choose the next case/i }));
     expect(screen.getByRole("heading", { name: /can you spot the warning signs/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(4);
+    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(5);
   });
 
-  it("offers keyboard-operable scenario and clue controls", async () => {
+  it("explains a false positive in the safe scenario", async () => {
+    const safeScenario = scenarios.find((scenario) => scenario.correctDecision === "safe")!;
     const user = userEvent.setup();
-    render(<App />);
+    render(<App seed={seedForVariant(safeScenario.id)} />);
+    await user.click(screen.getByRole("button", { name: new RegExp(safeScenario.title, "i") }));
+    await user.click(screen.getByRole("button", { name: new RegExp(safeScenario.decoys[0].label, "i") }));
+    await user.click(screen.getByRole("button", { name: /make my decision/i }));
+    await user.click(screen.getByRole("button", { name: /safe$/i }));
+    expect(screen.getByText(/false positive/i)).toBeInTheDocument();
+    expect(screen.getByText(/no designed warning signs/i)).toBeInTheDocument();
+  });
+
+  it("offers keyboard-operable scenario and evidence controls", async () => {
+    const user = userEvent.setup();
+    render(<App seed={42} />);
+    const firstCase = screen.getAllByRole("button", { name: /play this case/i })[0];
     await user.tab();
     await user.tab();
-    expect(screen.getByRole("button", { name: /urgent account warning/i })).toHaveFocus();
+    expect(firstCase).toHaveFocus();
     await user.keyboard("{Enter}");
-    expect(screen.getByRole("heading", { name: /urgent account warning/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /make my decision/i })).toBeInTheDocument();
     await user.tab();
     expect(screen.getByRole("link", { name: /can you spot the scam/i })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
     await user.tab();
-    expect(screen.getByRole("button", { name: /sender name and address/i })).toHaveFocus();
+    expect(screen.getAllByRole("button", { pressed: false })[0]).toHaveFocus();
   });
 
-  it("returns to a clean case list when reset during an investigation", async () => {
+  it("returns to a newly prepared, clean case list after reset", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App seed={17} />);
     await user.click(screen.getByRole("button", { name: /premium campus wi-fi poster/i }));
     await user.click(screen.getByRole("button", { name: /unofficial branding/i }));
     await user.click(screen.getByRole("button", { name: /reset for next visitor/i }));

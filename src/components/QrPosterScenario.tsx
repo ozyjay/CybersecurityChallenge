@@ -5,9 +5,9 @@ type Props = { scenario: Scenario; selectedClueIds: string[]; interactive: boole
 
 export function QrPosterScenario({ scenario, selectedClueIds, interactive, onToggle }: Props) {
   if (scenario.content.kind !== "qr") return null;
-  const { content, clues } = scenario;
+  const { content, clues, decoys } = scenario;
   const region = (name: string, children: React.ReactNode, className = "") => (
-    <SelectableRegion region={name} clues={clues} selectedClueIds={selectedClueIds} interactive={interactive} onToggle={onToggle} className={className}>
+    <SelectableRegion region={name} clues={clues} decoys={decoys} selectedClueIds={selectedClueIds} interactive={interactive} onToggle={onToggle} className={className}>
       {children}
     </SelectableRegion>
   );
@@ -15,7 +15,7 @@ export function QrPosterScenario({ scenario, selectedClueIds, interactive, onTog
     <article className="poster-card" aria-label="Fictional campus Wi-Fi poster">
       <div className="simulation-label">Fictional poster · QR pattern is inert</div>
       {region("organisation", <strong className="poster-brand">{content.organisation}</strong>)}
-      <h2>{content.headline}</h2>
+      {region("headline", <span className="poster-headline">{content.headline}</span>)}
       {region("offer", <p className="poster-offer">{content.offer}</p>)}
       {region("qr", <div className="qr-area"><div className="fake-qr" role="img" aria-label="Inert decorative QR-style pattern"><span /><span /><span /><span /><span /><span /><span /><span /><span /></div><strong>{content.scanLabel}</strong><code>{content.displayedUrl}</code></div>, "poster-centred")}
       {region("installation", <p>{content.installationRequest}</p>)}

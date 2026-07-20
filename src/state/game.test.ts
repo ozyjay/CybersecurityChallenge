@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { accountWarning } from "../scenarios/accountWarning";
+import { scenarios } from "../scenarios";
 import { gameReducer, initialGameState, scoreGame } from "./game";
+
+const accountWarning = scenarios.find((scenario) => scenario.familyId === "urgent-account-warning")!;
 
 describe("game state", () => {
   it("runs the main state transitions", () => {
@@ -18,7 +20,7 @@ describe("game state", () => {
   });
 
   it.each(["INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ screen, scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual(initialGameState);
+    expect(gameReducer({ screen, round: 3, scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
   });
 });
 
@@ -29,6 +31,12 @@ describe("scoring", () => {
   });
 
   it("deduplicates selections and applies a small false-positive penalty", () => {
-    expect(scoreGame(accountWarning, ["sender-mismatch", "sender-mismatch", "not-a-clue"], "safe")).toMatchObject({ correctClues: 1, falsePositives: 1, points: 8 });
+    expect(scoreGame(accountWarning, ["sender-mismatch", "sender-mismatch", accountWarning.decoys[0].id], "safe")).toMatchObject({ correctClues: 1, falsePositives: 1, points: 8 });
+  });
+
+  it("rewards recognising the safe comparison without requiring warning signs", () => {
+    const safeScenario = scenarios.find((scenario) => scenario.correctDecision === "safe")!;
+    expect(scoreGame(safeScenario, [], "safe")).toMatchObject({ correctClues: 0, missedClues: 0, falsePositives: 0, points: 20, maximum: 20 });
+    expect(scoreGame(safeScenario, [safeScenario.decoys[0].id], "safe").points).toBe(18);
   });
 });

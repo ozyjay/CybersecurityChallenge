@@ -26,6 +26,12 @@ use of technical tools.
 2. Campus Wi-Fi QR poster
 3. Too-good-to-be-true internship
 4. Shared document login page
+5. Expected service notification (genuinely safe comparison case)
+
+Each family has two reviewed local variants. A seeded randomiser chooses one
+variant per family and changes their order between rounds. Benign details can be
+selected as well as warning signs, allowing the reveal to explain false positives.
+Nothing is generated at runtime.
 
 All names, organisations, identities, and addresses are fictional. The visual
 direction is an accessible investigation game: a dark, high-contrast booth frame,

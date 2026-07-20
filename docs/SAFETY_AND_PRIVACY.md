@@ -10,10 +10,13 @@
 - Do not add scanning, exploitation, malware, payloads, credential attacks, or
   domain impersonation of a real organisation.
 - Package all scenario content and runtime assets locally.
+- Only select from reviewed local variants; never generate or fetch scenario text.
 
-The scenario validator rejects executable/form markup and non-allowlisted domains.
-Tests also guard against credential and personal-data input markup. Validation is
-defence in depth; every content change still requires human review.
+The scenario validator checks every materialised variant and rejects executable
+or form markup, active destination fields, malformed evidence, and non-allowlisted
+domains. Source validation scans all five family files. Tests also guard against
+credential and personal-data input markup. Validation is defence in depth; every
+content change still requires human review.
 
 ## Storage and reset policy
 

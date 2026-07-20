@@ -10,9 +10,9 @@ type Props = {
 
 export function EmailScenario({ scenario, selectedClueIds, interactive, onToggle }: Props) {
   if (scenario.content.kind !== "email") return null;
-  const { content, clues } = scenario;
+  const { content, clues, decoys } = scenario;
   const region = (name: string, children: React.ReactNode) => (
-    <SelectableRegion region={name} clues={clues} selectedClueIds={selectedClueIds} interactive={interactive} onToggle={onToggle}>
+    <SelectableRegion region={name} clues={clues} decoys={decoys} selectedClueIds={selectedClueIds} interactive={interactive} onToggle={onToggle}>
       {children}
     </SelectableRegion>
   );
@@ -22,7 +22,7 @@ export function EmailScenario({ scenario, selectedClueIds, interactive, onToggle
       <div className="simulation-label">Fictional simulation · links are inactive</div>
       <header className="email-header">
         {region("sender", <><strong>{content.displayName}</strong><span>{content.sender}</span></>)}
-        <div className="email-meta"><span>To</span> {content.recipient}</div>
+        {region("recipient", <div className="email-meta"><span>To</span> {content.recipient}</div>)}
         {region("subject", <><span className="meta-label">Subject</span><strong>{content.subject}</strong></>)}
       </header>
       <div className="email-body">
@@ -31,7 +31,7 @@ export function EmailScenario({ scenario, selectedClueIds, interactive, onToggle
           <div key={paragraph}>{region(`paragraph-${index}`, <p>{paragraph}</p>)}</div>
         ))}
         {region("action", <div className="fake-action"><strong>{content.actionLabel}</strong><code>{content.actionUrl}</code></div>)}
-        <p className="signoff">{content.signoff}</p>
+        {region("signoff", <p className="signoff">{content.signoff}</p>)}
       </div>
     </article>
   );

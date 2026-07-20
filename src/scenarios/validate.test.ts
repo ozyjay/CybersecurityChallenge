@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { accountWarning } from "./accountWarning";
 import { scenarios } from "./index";
 import { assertValidScenario, validateScenario, validateScenarios } from "./validate";
 
 describe("scenario validation", () => {
-  it("accepts all four curated fictional scenarios", () => {
-    expect(scenarios).toHaveLength(4);
+  const accountWarning = scenarios.find((scenario) => scenario.familyId === "urgent-account-warning")!;
+
+  it("accepts every curated variant", () => {
+    expect(scenarios).toHaveLength(10);
     expect(validateScenarios(scenarios)).toEqual([]);
   });
 
@@ -22,7 +23,7 @@ describe("scenario validation", () => {
       clues: [{ ...accountWarning.clues[0], selectableRegion: "unknown-region" }]
     };
     expect(validateScenario(malformed)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/non-empty id/),
+      expect.stringMatching(/non-empty id/i),
       expect.stringMatching(/non-empty subject/i),
       expect.stringMatching(/unsupported email selectable region/i)
     ]));

@@ -4,6 +4,7 @@ export type GameScreen = "INTRO" | "SCENARIO" | "DECISION" | "REVEAL" | "RESULT"
 
 export type GameState = {
   screen: GameScreen;
+  round: number;
   scenarioId: string | null;
   selectedClueIds: string[];
   decision: Decision | null;
@@ -19,6 +20,7 @@ export type GameAction =
 
 export const initialGameState: GameState = {
   screen: "INTRO",
+  round: 0,
   scenarioId: null,
   selectedClueIds: [],
   decision: null
@@ -28,7 +30,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "BEGIN":
       return state.screen === "INTRO" && action.scenarioId
-        ? { ...initialGameState, scenarioId: action.scenarioId, screen: "SCENARIO" }
+        ? { ...initialGameState, round: state.round, scenarioId: action.scenarioId, screen: "SCENARIO" }
         : state;
     case "TOGGLE_CLUE": {
       if (state.screen !== "SCENARIO") return state;
@@ -47,7 +49,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case "SHOW_RESULT":
       return state.screen === "REVEAL" ? { ...state, screen: "RESULT" } : state;
     case "RESET":
-      return initialGameState;
+      return { ...initialGameState, round: state.round + 1 };
   }
 }
 

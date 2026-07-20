@@ -3,13 +3,15 @@ export type Difficulty = "starter" | "intermediate";
 export type Decision = "safe" | "suspicious" | "escalate";
 export type Severity = "low" | "medium" | "high";
 
-export type Clue = {
+export type EvidenceItem = {
   id: string;
   label: string;
   explanation: string;
-  severity: Severity;
   selectableRegion: string;
 };
+
+export type Clue = EvidenceItem & { severity: Severity };
+export type Decoy = EvidenceItem;
 
 export type EmailContent = {
   kind: "email";
@@ -31,6 +33,8 @@ export type MessageContent = {
   receivedAt: string;
   heading: string;
   paragraphs: string[];
+  payOffer: string;
+  deadline: string;
   platformRequest: string;
   paymentRequest: string;
   companyDetails: string;
@@ -64,13 +68,30 @@ export type ScenarioContent = EmailContent | MessageContent | QrPosterContent | 
 
 export type Scenario = {
   id: string;
+  familyId: string;
+  variantId: string;
   title: string;
   category: ScenarioCategory;
   difficulty: Difficulty;
   introduction: string;
   content: ScenarioContent;
   clues: Clue[];
+  decoys: Decoy[];
   correctDecision: Decision;
   takeaway: string;
   careerConnection: string;
+};
+
+export type ScenarioVariant = {
+  id: string;
+  content: ScenarioContent;
+  clues?: Clue[];
+  decoys?: Decoy[];
+  takeaway?: string;
+  careerConnection?: string;
+};
+
+export type ScenarioFamily = Omit<Scenario, "id" | "familyId" | "variantId"> & {
+  id: string;
+  variants: ScenarioVariant[];
 };

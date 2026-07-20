@@ -1,4 +1,4 @@
-import type { Scenario } from "../types/scenario";
+import type { ScenarioFamily } from "../types/scenario";
 
 export const sharedDocumentLogin = {
   id: "shared-document-login",
@@ -61,7 +61,31 @@ export const sharedDocumentLogin = {
       selectableRegion: "support"
     }
   ],
+  decoys: [
+    {
+      id: "generic-document-title",
+      label: "Document page heading",
+      explanation: "A simple document heading is not suspicious by itself. Verify the address, sender, context, and sign-in request together.",
+      selectableRegion: "document"
+    }
+  ],
   correctDecision: "escalate",
   takeaway: "Open the known official document service yourself and confirm unexpected shares with the sender through another channel.",
-  careerConnection: "Identity and access specialists design safer sign-in journeys and reduce opportunities for credential theft."
-} satisfies Scenario;
+  careerConnection: "Identity and access specialists design safer sign-in journeys and reduce opportunities for credential theft.",
+  variants: [
+    {
+      id: "project-notes",
+      content: {
+        kind: "login",
+        serviceName: "ShareSpace Workspace",
+        pageUrl: "http://sharesp4ce-files.example.org/view",
+        documentTitle: "Project notes shared with you",
+        sharedBy: "Shared by: Workspace collaborator",
+        context: "No team, organisation, project name, or separate message explains why this file was shared.",
+        credentialPrompt: "Enter your work email and password to unlock the protected project notes.",
+        actionLabel: "Unlock with work account",
+        supportText: "ShareSpice Protected Files · Support link unavailable"
+      }
+    }
+  ]
+} satisfies ScenarioFamily;

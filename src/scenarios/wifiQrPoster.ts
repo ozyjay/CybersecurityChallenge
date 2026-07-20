@@ -1,4 +1,4 @@
-import type { Scenario } from "../types/scenario";
+import type { ScenarioFamily } from "../types/scenario";
 
 export const wifiQrPoster = {
   id: "premium-wifi-qr",
@@ -61,7 +61,31 @@ export const wifiQrPoster = {
       selectableRegion: "support"
     }
   ],
+  decoys: [
+    {
+      id: "wifi-question-headline",
+      label: "Question-style headline",
+      explanation: "A catchy headline is common in posters and is not suspicious by itself. The destination and requested device changes matter more.",
+      selectableRegion: "headline"
+    }
+  ],
   correctDecision: "escalate",
   takeaway: "Use the officially documented network setup and check with support before installing profiles or certificates.",
-  careerConnection: "Network security specialists design trusted access systems and investigate unsafe connection instructions."
-} satisfies Scenario;
+  careerConnection: "Network security specialists design trusted access systems and investigate unsafe connection instructions.",
+  variants: [
+    {
+      id: "exam-speed-pass",
+      content: {
+        kind: "qr",
+        organisation: "EXAMPLE STUDENT NET FASTPASS",
+        headline: "Need a stronger study connection?",
+        offer: "Activate unlimited exam-week bandwidth before this offer expires!",
+        scanLabel: "Scan to enable FastPass",
+        displayedUrl: "http://student-fastpass.example.net/connect",
+        installationRequest: "Add the StudyConnect profile and accept its network certificate when prompted.",
+        permissions: ["Change Wi-Fi configuration", "Trust network certificates", "Read device information"],
+        supportText: "Questions? Message the FastPass promotion team."
+      }
+    }
+  ]
+} satisfies ScenarioFamily;

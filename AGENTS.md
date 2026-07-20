@@ -15,6 +15,8 @@ This project is a defensive, local-first public awareness demonstration:
   contrast, reduced-motion support, and indicators that do not rely on colour.
 - Keep scenario content separate from rendering. Add logic and reset tests when
   behaviour changes, and run scenario safety validation.
+- Randomness may only choose or order reviewed local variants. Preserve seeded
+  reproducibility for tests and prepared replay; do not generate scenario text.
 - Reset must remove all session state. Keep attract and, once introduced, replay
   modes functional.
 - Never silently allocate an Open Day port. Development host and port must remain

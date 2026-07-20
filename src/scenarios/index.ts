@@ -1,13 +1,16 @@
 import { accountWarning } from "./accountWarning";
+import { expectedNotification } from "./expectedNotification";
 import { internshipOffer } from "./internshipOffer";
+import { allVariants, buildScenarioDeck as createDeck } from "./randomise";
 import { sharedDocumentLogin } from "./sharedDocumentLogin";
-import { wifiQrPoster } from "./wifiQrPoster";
 import { assertValidScenarios } from "./validate";
+import { wifiQrPoster } from "./wifiQrPoster";
 
-export const scenarios = [accountWarning, wifiQrPoster, internshipOffer, sharedDocumentLogin];
+export const scenarioFamilies = [accountWarning, wifiQrPoster, internshipOffer, sharedDocumentLogin, expectedNotification];
+export const scenarios = allVariants(scenarioFamilies);
 
 assertValidScenarios(scenarios);
 
-export function scenarioById(id: string) {
-  return scenarios.find((scenario) => scenario.id === id);
+export function buildScenarioDeck(seed: number) {
+  return createDeck(scenarioFamilies, seed);
 }

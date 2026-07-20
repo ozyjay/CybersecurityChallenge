@@ -5,9 +5,9 @@ type Props = { scenario: Scenario; selectedClueIds: string[]; interactive: boole
 
 export function LoginScenario({ scenario, selectedClueIds, interactive, onToggle }: Props) {
   if (scenario.content.kind !== "login") return null;
-  const { content, clues } = scenario;
+  const { content, clues, decoys } = scenario;
   const region = (name: string, children: React.ReactNode) => (
-    <SelectableRegion region={name} clues={clues} selectedClueIds={selectedClueIds} interactive={interactive} onToggle={onToggle}>{children}</SelectableRegion>
+    <SelectableRegion region={name} clues={clues} decoys={decoys} selectedClueIds={selectedClueIds} interactive={interactive} onToggle={onToggle}>{children}</SelectableRegion>
   );
   return (
     <article className="login-browser" aria-label="Fictional shared document sign-in page">
@@ -16,7 +16,7 @@ export function LoginScenario({ scenario, selectedClueIds, interactive, onToggle
       <div className="login-page">
         {region("brand", <strong className="login-brand">{content.serviceName}</strong>)}
         <div className="login-panel">
-          <h2>{content.documentTitle}</h2>
+          {region("document", <span className="login-title">{content.documentTitle}</span>)}
           {region("sender", <p>{content.sharedBy}</p>)}
           {region("context", <p>{content.context}</p>)}
           {region("credentials", <div className="credential-preview"><p>{content.credentialPrompt}</p><div className="disabled-field">Organisation email — entry disabled</div><div className="disabled-field">Password — entry disabled</div><span className="disabled-submit">{content.actionLabel}</span></div>)}

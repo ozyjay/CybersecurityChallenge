@@ -1,6 +1,7 @@
-import { useReducer } from "react";
+import { useMemo, useReducer, useRef } from "react";
 import { ScenarioDisplay } from "./components/ScenarioDisplay";
-import { scenarios, scenarioById } from "./scenarios";
+import { buildScenarioDeck } from "./scenarios";
+import { createRandomSeed } from "./scenarios/randomise";
 import { gameReducer, initialGameState, resultLabel, scoreGame } from "./state/game";
 import type { Decision, ScenarioCategory } from "./types/scenario";
 
@@ -18,9 +19,13 @@ const categoryLabels: Record<ScenarioCategory, string> = {
   permissions: "Permission request"
 };
 
-export default function App() {
+type AppProps = { seed?: number };
+
+export default function App({ seed }: AppProps) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
-  const scenario = state.scenarioId ? scenarioById(state.scenarioId) : undefined;
+  const baseSeed = useRef(seed ?? createRandomSeed());
+  const deck = useMemo(() => buildScenarioDeck(baseSeed.current + state.round), [state.round]);
+  const scenario = state.scenarioId ? deck.find((candidate) => candidate.id === state.scenarioId) : undefined;
   const score = scenario ? scoreGame(scenario, state.selectedClueIds, state.decision) : null;
 
   const resetButton = state.screen !== "INTRO" && state.screen !== "RESULT" && (
@@ -40,7 +45,7 @@ export default function App() {
             <h1 id="intro-title">Can you spot the warning signs?</h1>
             <p className="lead">Look for warning signs before you trust a message, link, or login page. Choose a fictional case to begin.</p>
             <div className="scenario-picker" aria-label="Choose a scenario">
-              {scenarios.map((option, index) => (
+              {deck.map((option, index) => (
                 <button className="scenario-choice" type="button" key={option.id} onClick={() => dispatch({ type: "BEGIN", scenarioId: option.id })}>
                   <span className="case-number">Case {String(index + 1).padStart(2, "0")}</span>
                   <strong>{option.title}</strong>
@@ -92,10 +97,16 @@ export default function App() {
             <h1 id="reveal-title">Here’s what the scenario was hiding</h1>
             <p className="lead">You chose <strong>{state.decision ? decisionLabels[state.decision] : "no decision"}</strong>. The recommended response is <strong>{decisionLabels[scenario.correctDecision]}</strong>.</p>
             <div className="evidence-grid">
+              {scenario.clues.length === 0 && (
+                <article className="evidence-card safe-evidence"><span className="status found">✓ Prepared safe example</span><h2>No designed warning signs</h2><p>This message has an expected context, asks for no credentials or payment, and recommends independent navigation.</p></article>
+              )}
               {scenario.clues.map((clue) => {
                 const found = state.selectedClueIds.includes(clue.id);
                 return <article className="evidence-card" key={clue.id}><span className={`status ${found ? "found" : "missed"}`}>{found ? "✓ You found this" : "○ Worth noticing"}</span><h2>{clue.label}</h2><p>{clue.explanation}</p><small>Impact: {clue.severity}</small></article>;
               })}
+              {scenario.decoys.filter((decoy) => state.selectedClueIds.includes(decoy.id)).map((decoy) => (
+                <article className="evidence-card false-positive" key={decoy.id}><span className="status review">△ False positive</span><h2>{decoy.label}</h2><p>{decoy.explanation}</p><small>Useful caution, but not a warning sign here</small></article>
+              ))}
             </div>
             <button className="primary-button centred" type="button" onClick={() => dispatch({ type: "SHOW_RESULT" })}>See my result</button>
           </section>
@@ -106,7 +117,7 @@ export default function App() {
             <span className="eyebrow">Investigation complete · {scenario.title}</span>
             <h1 id="result-title">{resultLabel(score.points, score.maximum)}</h1>
             <p className="score"><strong>{score.points}</strong><span>out of {score.maximum} points</span></p>
-            <p>You identified {score.correctClues} of {scenario.clues.length} warning signs and your final decision was {score.decisionCorrect ? "a strong defensive choice" : "a chance to practise checking before acting"}.</p>
+            <p>You identified {score.correctClues} of {scenario.clues.length} warning signs, marked {score.falsePositives} benign {score.falsePositives === 1 ? "detail" : "details"}, and your final decision was {score.decisionCorrect ? "a strong defensive choice" : "a chance to practise checking before acting"}.</p>
             <div className="learning-box"><h2>Take this with you</h2><p>{scenario.takeaway}</p></div>
             <div className="career-box"><h2>A cybersecurity career connection</h2><p>{scenario.careerConnection}</p></div>
             <p className="perspective">A score is just one practice round—not a guarantee about real-world safety.</p>
