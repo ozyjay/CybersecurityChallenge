@@ -23,6 +23,9 @@ content change still requires human review.
 Visitor interactions live only in volatile component state. Nothing is written to
 cookies, local storage, files, logs, or a remote service. **Reset for next visitor**
 clears clue selection, decision, score, and result by restoring initial state.
+It also clears the temporary completed-variant exclusion. Continuing with
+**Choose the next case** retains only the immediately completed variant identifier
+in memory so that exact variant is not offered twice in succession.
 
 ## Incident response
 

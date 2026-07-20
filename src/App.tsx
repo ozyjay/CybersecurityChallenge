@@ -24,7 +24,10 @@ type AppProps = { seed?: number };
 export default function App({ seed }: AppProps) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
   const baseSeed = useRef(seed ?? createRandomSeed());
-  const deck = useMemo(() => buildScenarioDeck(baseSeed.current + state.round), [state.round]);
+  const deck = useMemo(
+    () => buildScenarioDeck(baseSeed.current + state.round, state.lastCompletedScenarioId ? [state.lastCompletedScenarioId] : []),
+    [state.lastCompletedScenarioId, state.round]
+  );
   const scenario = state.scenarioId ? deck.find((candidate) => candidate.id === state.scenarioId) : undefined;
   const score = scenario ? scoreGame(scenario, state.selectedClueIds, state.decision) : null;
 
@@ -46,7 +49,7 @@ export default function App({ seed }: AppProps) {
             <p className="lead">Look for warning signs before you trust a message, link, or login page. Choose a fictional case to begin.</p>
             <div className="scenario-picker" aria-label="Choose a scenario">
               {deck.map((option, index) => (
-                <button className="scenario-choice" type="button" key={option.id} onClick={() => dispatch({ type: "BEGIN", scenarioId: option.id })}>
+                <button className="scenario-choice" type="button" key={option.id} data-scenario-id={option.id} onClick={() => dispatch({ type: "BEGIN", scenarioId: option.id })}>
                   <span className="case-number">Case {String(index + 1).padStart(2, "0")}</span>
                   <strong>{option.title}</strong>
                   <span>{categoryLabels[option.category]} · {option.difficulty}</span>
@@ -84,7 +87,7 @@ export default function App({ seed }: AppProps) {
                       <button key={decision} type="button" onClick={() => dispatch({ type: "DECIDE", decision })}>{decisionLabels[decision]}</button>
                     ))}
                   </div>
-                  <button className="text-button" type="button" onClick={() => dispatch({ type: "RESET" })}>Choose another case</button>
+                  <button className="text-button" type="button" onClick={() => dispatch({ type: "RETURN_TO_CASES" })}>Choose another case</button>
                 </>}
               </aside>
             </div>
@@ -121,12 +124,15 @@ export default function App({ seed }: AppProps) {
             <div className="learning-box"><h2>Take this with you</h2><p>{scenario.takeaway}</p></div>
             <div className="career-box"><h2>A cybersecurity career connection</h2><p>{scenario.careerConnection}</p></div>
             <p className="perspective">A score is just one practice round—not a guarantee about real-world safety.</p>
-            <button className="primary-button" type="button" onClick={() => dispatch({ type: "RESET" })}>Choose the next case</button>
+            <div className="result-actions">
+              <button className="primary-button" type="button" onClick={() => dispatch({ type: "NEXT_CASE" })}>Choose the next case</button>
+              <button className="quiet-button" type="button" onClick={() => dispatch({ type: "RESET" })}>Reset for next visitor</button>
+            </div>
           </section>
         )}
 
         {!scenario && state.screen !== "INTRO" && (
-          <section className="panel" aria-live="assertive"><h1>That case could not be loaded</h1><p>Return to the case list and choose another prepared scenario.</p><button className="primary-button" type="button" onClick={() => dispatch({ type: "RESET" })}>Return to case list</button></section>
+          <section className="panel" aria-live="assertive"><h1>That case could not be loaded</h1><p>Return to the case list and choose another prepared scenario.</p><button className="primary-button" type="button" onClick={() => dispatch({ type: "RETURN_TO_CASES" })}>Return to case list</button></section>
         )}
       </main>
       <footer>Cybersecurity depends on careful design, verification, and informed decisions.</footer>

@@ -114,6 +114,7 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--yellow); outlin
 .evidence-card.false-positive { border-style: dashed; }
 .safe-evidence { grid-column: 1 / -1; }
 .centred { display: block; margin: auto; }
+.result-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin-top: 1.5rem; }
 .score { display: grid; margin: 1rem; }
 .score strong { color: var(--yellow); font-size: clamp(3rem, 8vw, 5rem); line-height: 1; }
 .score span { color: var(--muted); }

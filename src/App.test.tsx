@@ -36,9 +36,11 @@ describe("visitor journeys", () => {
 
     await user.click(screen.getByRole("button", { name: /see my result/i }));
     expect(screen.getByText(new RegExp(`out of ${scenario.clues.length * 10 + 20} points`, "i"))).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset for next visitor/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /choose the next case/i }));
     expect(screen.getByRole("heading", { name: /can you spot the warning signs/i })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(5);
+    expect(screen.getByRole("button", { name: new RegExp(scenario.title, "i") })).not.toHaveAttribute("data-scenario-id", scenario.id);
   });
 
   it("explains a false positive in the safe scenario", async () => {

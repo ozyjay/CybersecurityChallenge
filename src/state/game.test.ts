@@ -20,7 +20,25 @@ describe("game state", () => {
   });
 
   it.each(["INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ screen, round: 3, scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+    expect(gameReducer({ screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+  });
+
+  it("excludes only the completed variant when continuing", () => {
+    const resultState = { ...initialGameState, screen: "RESULT" as const, round: 2, scenarioId: accountWarning.id };
+    expect(gameReducer(resultState, { type: "NEXT_CASE" })).toEqual({
+      ...initialGameState,
+      round: 3,
+      lastCompletedScenarioId: accountWarning.id
+    });
+  });
+
+  it("preserves completion history when returning from an unfinished case", () => {
+    const decisionState = { ...initialGameState, screen: "DECISION" as const, round: 2, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id };
+    expect(gameReducer(decisionState, { type: "RETURN_TO_CASES" })).toEqual({
+      ...initialGameState,
+      round: 3,
+      lastCompletedScenarioId: "previous:variant"
+    });
   });
 });
 

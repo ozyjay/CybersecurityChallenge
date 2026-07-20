@@ -58,10 +58,12 @@ An event port must be recorded in the OpenDayOps registry and decisions log.
 
 Choose one of five cases, flag suspicious regions, make a decision, review the
 evidence, and view the result. **Reset for next visitor** or **Choose the next
-case** returns directly to the case list and clears all in-memory state. Refresh
-the page if the browser ever becomes unresponsive. Reset prepares another seeded
-local deck; no generated or downloaded scenario text is used. Replay and dedicated
-staff controls are Phase 3 work.
+case** returns directly to the case list and clears the current score and choices.
+After a completed case, its exact variant is withheld from the next deck; the
+same scenario family remains available through its reviewed alternative. **Reset
+for next visitor** clears this temporary exclusion completely. Refresh the page if
+the browser ever becomes unresponsive. No generated or downloaded scenario text
+is used. Replay and dedicated staff controls are Phase 3 work.
 
 ## Privacy and safety
 

@@ -11,6 +11,6 @@ export const scenarios = allVariants(scenarioFamilies);
 
 assertValidScenarios(scenarios);
 
-export function buildScenarioDeck(seed: number) {
-  return createDeck(scenarioFamilies, seed);
+export function buildScenarioDeck(seed: number, excludedScenarioIds: readonly string[] = []) {
+  return createDeck(scenarioFamilies, seed, excludedScenarioIds);
 }

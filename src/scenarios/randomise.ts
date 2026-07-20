@@ -31,11 +31,14 @@ export function allVariants(families: readonly ScenarioFamily[]): Scenario[] {
   return families.flatMap((family) => [materialise(family), ...family.variants.map((variant) => materialise(family, variant))]);
 }
 
-export function buildScenarioDeck(families: readonly ScenarioFamily[], seed: number): Scenario[] {
+export function buildScenarioDeck(families: readonly ScenarioFamily[], seed: number, excludedScenarioIds: readonly string[] = []): Scenario[] {
   const random = seededRandom(seed);
+  const excluded = new Set(excludedScenarioIds);
   const deck = families.map((family) => {
-    const choices: Array<ScenarioVariant | undefined> = [undefined, ...family.variants];
-    return materialise(family, choices[Math.floor(random() * choices.length)]);
+    const allChoices = [materialise(family), ...family.variants.map((variant) => materialise(family, variant))];
+    const availableChoices = allChoices.filter((scenario) => !excluded.has(scenario.id));
+    const choices = availableChoices.length > 0 ? availableChoices : allChoices;
+    return choices[Math.floor(random() * choices.length)];
   });
 
   for (let index = deck.length - 1; index > 0; index -= 1) {

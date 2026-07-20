@@ -16,10 +16,11 @@ allocation.
 2. Use Tab and Enter to choose a case; select and deselect a clue.
 3. Make a decision, inspect all evidence cards, and view the result.
 4. Select **Choose the next case** and confirm the case list returns with no
-   previous clue count, decision, score, or result.
+   previous clue count, decision, score, or result. If the same scenario family
+   is selected again, confirm its wording is the reviewed alternative variant.
 5. Start a different scenario, use **Reset for next visitor**, and repeat once
    with touch or mouse input. Confirm the case order or wording may change while
-   remaining within the prepared scenario set.
+   remaining within the prepared scenario set and no prior completion is retained.
 
 ## Staff script
 

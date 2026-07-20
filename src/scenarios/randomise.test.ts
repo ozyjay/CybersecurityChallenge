@@ -18,6 +18,22 @@ describe("seeded scenario randomisation", () => {
     expect(signatures.size).toBeGreaterThan(5);
   });
 
+  it("replaces an excluded variant with its reviewed family alternative", () => {
+    const firstDeck = buildScenarioDeck(321);
+    const completed = firstDeck[0];
+    const nextDeck = buildScenarioDeck(322, [completed.id]);
+    const sameFamily = nextDeck.find((scenario) => scenario.familyId === completed.familyId)!;
+    expect(sameFamily.id).not.toBe(completed.id);
+    expect(scenarios).toContainEqual(sameFamily);
+  });
+
+  it("falls back safely if every variant in a family is excluded", () => {
+    const family = scenarioFamilies[0];
+    const familyVariantIds = scenarios.filter((scenario) => scenario.familyId === family.id).map((scenario) => scenario.id);
+    const deck = buildScenarioDeck(99, familyVariantIds);
+    expect(deck.some((scenario) => scenario.familyId === family.id)).toBe(true);
+  });
+
   it("includes a genuinely safe family alongside suspicious cases", () => {
     const safeVariants = scenarios.filter((scenario) => scenario.correctDecision === "safe");
     expect(safeVariants).toHaveLength(2);
