@@ -1,6 +1,6 @@
 import type { Decision, Scenario } from "../types/scenario";
 
-export type GameScreen = "INTRO" | "SCENARIO" | "DECISION" | "REVEAL" | "RESULT";
+export type GameScreen = "ATTRACT" | "INTRO" | "SCENARIO" | "DECISION" | "REVEAL" | "RESULT";
 
 export type GameState = {
   screen: GameScreen;
@@ -9,33 +9,52 @@ export type GameState = {
   scenarioId: string | null;
   selectedClueIds: string[];
   decision: Decision | null;
+  isReplay: boolean;
 };
 
 export type GameAction =
+  | { type: "OPEN_CASES" }
   | { type: "BEGIN"; scenarioId: string }
+  | { type: "START_SCENARIO"; scenarioId: string }
+  | { type: "START_REPLAY"; scenarioId: string }
+  | { type: "SET_REPLAY_CLUES"; clueIds: string[] }
   | { type: "TOGGLE_CLUE"; clueId: string }
   | { type: "OPEN_DECISION" }
   | { type: "DECIDE"; decision: Decision }
   | { type: "SHOW_RESULT" }
   | { type: "NEXT_CASE" }
   | { type: "RETURN_TO_CASES" }
+  | { type: "RETURN_TO_ATTRACT" }
   | { type: "RESET" };
 
 export const initialGameState: GameState = {
-  screen: "INTRO",
+  screen: "ATTRACT",
   round: 0,
   lastCompletedScenarioId: null,
   scenarioId: null,
   selectedClueIds: [],
-  decision: null
+  decision: null,
+  isReplay: false
 };
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
+    case "OPEN_CASES":
+      return state.screen === "ATTRACT" ? { ...state, screen: "INTRO" } : state;
     case "BEGIN":
       return state.screen === "INTRO" && action.scenarioId
         ? { ...initialGameState, round: state.round, lastCompletedScenarioId: state.lastCompletedScenarioId, scenarioId: action.scenarioId, screen: "SCENARIO" }
         : state;
+    case "START_SCENARIO":
+      return action.scenarioId
+        ? { ...initialGameState, round: state.round, lastCompletedScenarioId: state.lastCompletedScenarioId, scenarioId: action.scenarioId, screen: "SCENARIO" }
+        : state;
+    case "START_REPLAY":
+      return action.scenarioId
+        ? { ...initialGameState, round: state.round, scenarioId: action.scenarioId, screen: "SCENARIO", isReplay: true }
+        : state;
+    case "SET_REPLAY_CLUES":
+      return state.screen === "SCENARIO" && state.isReplay ? { ...state, selectedClueIds: [...new Set(action.clueIds)] } : state;
     case "TOGGLE_CLUE": {
       if (state.screen !== "SCENARIO") return state;
       const selected = state.selectedClueIds.includes(action.clueId);
@@ -54,10 +73,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return state.screen === "REVEAL" ? { ...state, screen: "RESULT" } : state;
     case "NEXT_CASE":
       return state.screen === "RESULT" && state.scenarioId
-        ? { ...initialGameState, round: state.round + 1, lastCompletedScenarioId: state.scenarioId }
+        ? { ...initialGameState, screen: "INTRO", round: state.round + 1, lastCompletedScenarioId: state.scenarioId }
         : state;
     case "RETURN_TO_CASES":
-      return { ...initialGameState, round: state.round + 1, lastCompletedScenarioId: state.lastCompletedScenarioId };
+      return { ...initialGameState, screen: "INTRO", round: state.round + 1, lastCompletedScenarioId: state.lastCompletedScenarioId };
+    case "RETURN_TO_ATTRACT":
+      return { ...initialGameState, round: state.round + 1 };
     case "RESET":
       return { ...initialGameState, round: state.round + 1 };
   }

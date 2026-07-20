@@ -6,7 +6,7 @@ The experience is designed for high-school students, parents, and the general
 public at a busy university booth. Instructions should be understandable within
 10–20 seconds and a round should take about 30–60 seconds.
 
-The visitor sees the attract screen, inspects a large fictional artefact, flags
+The visitor sees the attract screen, taps to choose a case, inspects a large fictional artefact, flags
 warning signs, makes a safety decision, reviews evidence, receives a learning-
 first score and career connection, then resets for the next visitor.
 

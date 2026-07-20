@@ -17,10 +17,15 @@ function seedForVariant(scenarioId: string): number {
   throw new Error(`No deterministic seed found for ${scenarioId}`);
 }
 
+async function openCaseList(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: /tap to begin/i }));
+}
+
 describe("visitor journeys", () => {
   it.each(scenarios)("completes curated variant $id", async (scenario) => {
     const user = userEvent.setup();
     render(<App seed={seedForVariant(scenario.id)} />);
+    await openCaseList(user);
     await user.click(screen.getByRole("button", { name: new RegExp(scenario.title, "i") }));
 
     if (scenario.clues[0]) {
@@ -38,7 +43,7 @@ describe("visitor journeys", () => {
     expect(screen.getByText(new RegExp(`out of ${scenario.clues.length * 10 + 20} points`, "i"))).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /choose the next case/i }));
-    expect(screen.getByRole("heading", { name: /can you spot the warning signs/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /which case will you inspect/i })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(5);
     expect(screen.getByRole("button", { name: new RegExp(scenario.title, "i") })).not.toHaveAttribute("data-scenario-id", scenario.id);
   });
@@ -47,6 +52,7 @@ describe("visitor journeys", () => {
     const safeScenario = scenarios.find((scenario) => scenario.correctDecision === "safe")!;
     const user = userEvent.setup();
     render(<App seed={seedForVariant(safeScenario.id)} />);
+    await openCaseList(user);
     await user.click(screen.getByRole("button", { name: new RegExp(safeScenario.title, "i") }));
     await user.click(screen.getByRole("button", { name: new RegExp(safeScenario.decoys[0].label, "i") }));
     await user.click(screen.getByRole("button", { name: /make my decision/i }));
@@ -58,16 +64,28 @@ describe("visitor journeys", () => {
   it("offers keyboard-operable scenario and evidence controls", async () => {
     const user = userEvent.setup();
     render(<App seed={42} />);
-    const firstCase = screen.getAllByRole("button", { name: /play this case/i })[0];
     await user.tab();
     await user.tab();
-    expect(firstCase).toHaveFocus();
+    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: /tap to begin/i })).toHaveFocus();
     await user.keyboard("{Enter}");
-    expect(screen.getByRole("button", { name: /make my decision/i })).toBeInTheDocument();
     await user.tab();
     expect(screen.getByRole("link", { name: /can you spot the scam/i })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
+    await user.tab();
+    const firstCase = screen.getAllByRole("button", { name: /play this case/i })[0];
+    expect(firstCase).toHaveFocus();
+    await user.keyboard("{Enter}");
+    await user.tab();
+    expect(screen.getByRole("link", { name: /can you spot the scam/i })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
     await user.tab();
     expect(screen.getAllByRole("button", { pressed: false })[0]).toHaveFocus();
   });
@@ -75,10 +93,12 @@ describe("visitor journeys", () => {
   it("returns to a newly prepared, clean case list after reset", async () => {
     const user = userEvent.setup();
     render(<App seed={17} />);
+    await openCaseList(user);
     await user.click(screen.getByRole("button", { name: /premium campus wi-fi poster/i }));
     await user.click(screen.getByRole("button", { name: /unofficial branding/i }));
     await user.click(screen.getByRole("button", { name: /reset for next visitor/i }));
     expect(screen.getByRole("heading", { name: /can you spot the warning signs/i })).toBeInTheDocument();
+    await openCaseList(user);
     await user.click(screen.getByRole("button", { name: /premium campus wi-fi poster/i }));
     expect(screen.getByText("0", { selector: ".clue-counter strong" })).toBeInTheDocument();
   });

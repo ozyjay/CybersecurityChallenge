@@ -12,8 +12,9 @@ allocation.
 
 ## Smoke test
 
-1. Confirm all five case choices and the privacy statement are visible.
-2. Use Tab and Enter to choose a case; select and deselect a clue.
+1. Confirm the attract screen, **Tap to begin**, and privacy statement are visible.
+2. Use Tab and Enter to open the five-case selection; choose a case and select
+   and deselect a clue.
 3. Make a decision, inspect all evidence cards, and view the result.
 4. Select **Choose the next case** and confirm the case list returns with no
    previous clue count, decision, score, or result. If the same scenario family
@@ -21,6 +22,31 @@ allocation.
 5. Start a different scenario, use **Reset for next visitor**, and repeat once
    with touch or mouse input. Confirm the case order or wording may change while
    remaining within the prepared scenario set and no prior completion is retained.
+
+## Staff controls
+
+Open the panel using **Staff** or `Ctrl+Alt+S`; press Escape to close it.
+
+- **Timer enabled**: standard 45-second investigation timer.
+- **Relaxed 90-second timer**: doubles the timer without changing scoring.
+- **Optional sound cues**: local cues only; disabled by default and never required.
+- **Difficulty**: show all, starter-only, or intermediate-only visitor cases.
+- **Prepared case**: choose the exact local variant for staff start or replay.
+- **Loop automatically**: repeat replay across the seeded deck.
+- **Return to attract screen** and **Reset for next visitor**: clean booth recovery.
+
+## Prepared replay
+
+1. Open staff controls and choose a prepared case.
+2. Leave **Loop automatically** enabled for passive booth display, or disable it
+   for a single walkthrough.
+3. Select **Start prepared replay**.
+4. Confirm the prepared-demonstration label remains visible while clues,
+   decision, evidence, and result advance automatically.
+5. Tap the screen or press any key. Confirm replay stops immediately at attract.
+
+Replay is deterministic for a given seed, requires no network access, does not
+run the visitor timer, and never uses generated content.
 
 ## Staff script
 
@@ -36,8 +62,8 @@ occupied port, stop the process using that port or select another permitted
 development port—do not let Vite choose one silently. If assets fail to load,
 restart the local server and repeat the smoke test.
 
-Replay mode is not available in Phase 1. Staff should use the normal interaction
-path until the prepared automatic walkthrough is implemented.
+If replay does not advance, tap once to interrupt it, use **Reset for next
+visitor**, and start it again from staff controls.
 
 ## Shutdown
 

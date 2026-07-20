@@ -27,6 +27,11 @@ It also clears the temporary completed-variant exclusion. Continuing with
 **Choose the next case** retains only the immediately completed variant identifier
 in memory so that exact variant is not offered twice in succession.
 
+Timer, staff, and replay settings also remain in volatile page memory. Prepared
+replay selects only authored clues and decisions from the validated local
+catalogue. Optional sound cues are synthesised locally through the browser and
+are disabled by default; sound is never required to complete a case.
+
 ## Incident response
 
 If unexpected content, a live destination, or retained visitor state is observed:

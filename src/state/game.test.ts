@@ -6,7 +6,8 @@ const accountWarning = scenarios.find((scenario) => scenario.familyId === "urgen
 
 describe("game state", () => {
   it("runs the main state transitions", () => {
-    let state = gameReducer(initialGameState, { type: "BEGIN", scenarioId: accountWarning.id });
+    let state = gameReducer(initialGameState, { type: "OPEN_CASES" });
+    state = gameReducer(state, { type: "BEGIN", scenarioId: accountWarning.id });
     expect(state.scenarioId).toBe(accountWarning.id);
     state = gameReducer(state, { type: "TOGGLE_CLUE", clueId: "sender-mismatch" });
     state = gameReducer(state, { type: "TOGGLE_CLUE", clueId: "sender-mismatch" });
@@ -19,14 +20,15 @@ describe("game state", () => {
     expect(gameReducer(state, { type: "SHOW_RESULT" }).screen).toBe("RESULT");
   });
 
-  it.each(["INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+  it.each(["ATTRACT", "INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
+    expect(gameReducer({ screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", isReplay: false }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
   });
 
   it("excludes only the completed variant when continuing", () => {
     const resultState = { ...initialGameState, screen: "RESULT" as const, round: 2, scenarioId: accountWarning.id };
     expect(gameReducer(resultState, { type: "NEXT_CASE" })).toEqual({
       ...initialGameState,
+      screen: "INTRO",
       round: 3,
       lastCompletedScenarioId: accountWarning.id
     });
@@ -36,9 +38,18 @@ describe("game state", () => {
     const decisionState = { ...initialGameState, screen: "DECISION" as const, round: 2, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id };
     expect(gameReducer(decisionState, { type: "RETURN_TO_CASES" })).toEqual({
       ...initialGameState,
+      screen: "INTRO",
       round: 3,
       lastCompletedScenarioId: "previous:variant"
     });
+  });
+
+  it("runs prepared replay transitions only in replay mode", () => {
+    let state = gameReducer(initialGameState, { type: "START_REPLAY", scenarioId: accountWarning.id });
+    expect(state).toMatchObject({ screen: "SCENARIO", isReplay: true, scenarioId: accountWarning.id });
+    state = gameReducer(state, { type: "SET_REPLAY_CLUES", clueIds: ["sender-mismatch", "sender-mismatch"] });
+    expect(state.selectedClueIds).toEqual(["sender-mismatch"]);
+    expect(gameReducer({ ...state, isReplay: false }, { type: "SET_REPLAY_CLUES", clueIds: ["other"] }).selectedClueIds).toEqual(["sender-mismatch"]);
   });
 });
 

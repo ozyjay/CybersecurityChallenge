@@ -15,12 +15,17 @@ initial state.
 - `src/scenarios/index.ts` exposes five local scenario families and ten variants.
 - `src/scenarios/randomise.ts` selects one variant per family and shuffles the
   deck through a deterministic seeded pseudo-random generator.
+- `src/components/StaffControls.tsx` provides session-only booth settings and
+  direct prepared-case controls.
+- `src/hooks/useCountdown.ts` owns cancellable timer behaviour.
+- `src/hooks/usePreparedReplay.ts` coordinates deterministic replay and
+  capture-level visitor interruption.
 - Scenario data files contain content only; they do not define UI behaviour.
 - `src/scenarios/validate.ts` enforces content constraints during startup/tests.
 - `src/state/game.ts` owns transitions and deterministic scoring.
 - `src/types/scenario.ts` defines the extensible scenario contract.
 
-The state machine follows `INTRO → SCENARIO → DECISION → REVEAL → RESULT`.
+The state machine follows `ATTRACT → INTRO → SCENARIO → DECISION → REVEAL → RESULT`.
 `BEGIN` records the selected variant identifier. From the result screen,
 `NEXT_CASE` records that completed variant, increments the in-memory round seed,
 and returns to `INTRO`. The next deck excludes only that exact variant, leaving
@@ -28,6 +33,18 @@ the family’s reviewed alternative available. `RETURN_TO_CASES` preserves an
 existing exclusion when an unfinished case is left. `RESET` is valid from every
 state and clears the exclusion for the next visitor. Selecting evidence toggles
 its identifier, preventing duplicate scoring.
+
+Timer configuration remains outside visitor game state so next-visitor reset can
+clear interaction data without discarding booth settings. The timer runs only on
+the interactive `SCENARIO` screen, is disabled during replay, doubles its duration
+in relaxed mode, and cancels whenever the screen or case changes.
+
+Prepared replay uses normal reducer actions: start a seeded scenario, select up
+to three reviewed clues, open the decision, choose the authored correct response,
+show evidence and result, then return to attract mode. Looping advances through
+the seeded deck. A capture-level pointer or keyboard listener cancels replay and
+performs a clean next-visitor reset. Scheduled replay steps are disposed whenever
+the stage changes or replay is interrupted.
 
 `ScenarioContent` is a discriminated union. The current content kinds are email,
 direct message, QR poster, and sign-in page. Each renderer maps its prepared
@@ -56,5 +73,6 @@ the application is in development mode.
 ## Extension points
 
 New prepared content variants can be added to the discriminated union with a
-matching renderer and region allowlist. Phase 3 can add timer and replay events
-to the reducer without persistence. A backend is not an assumed extension point.
+matching renderer and region allowlist. Phase 4 can extend browser-level
+reliability coverage without changing the static runtime design. A backend is not
+an assumed extension point.

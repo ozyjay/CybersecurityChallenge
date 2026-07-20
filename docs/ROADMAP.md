@@ -8,13 +8,13 @@
 - Keyboard/touch-friendly controls and one-action reset
 - Strict configurable development hosting and initial documentation
 
-## MVP 0.2–0.3 — Scenario framework and controlled variety
+## MVP 0.2–0.4 — Scenarios and booth operation
 
 - [x] Add three curated scenarios and data-driven scenario selection
 - [x] Expand build-time schema/content validation
 - [x] Add seeded local variants, shuffled case order, benign regions, and a safe comparison case
-- Add optional timer/relaxed mode, sound-off default, and unobtrusive staff controls
-- Add prepared offline replay mode and staff scenario selection
+- [x] Add optional timer/relaxed mode, sound-off default, and unobtrusive staff controls
+- [x] Add prepared offline replay mode and staff scenario selection
 
 ## Rehearsal and Phase 4
 
@@ -26,7 +26,7 @@
 
 ## Open Day readiness gates
 
-Do not label the project Open Day ready until all four scenarios are polished,
+Do not label the project Open Day ready until all five scenarios are polished,
 instructions test clearly within 10–20 seconds, reset and offline replay work,
 privacy/safety and staff operation are independently verified, keyboard and touch
 work, the 60-minute burn-in passes, and the event port plus presentation rotation

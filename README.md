@@ -6,14 +6,15 @@ response, and receive concise educational feedback.
 
 ## Status
 
-MVP 0.3 includes five curated fictional scenario families with ten reviewed
+MVP 0.4 includes five curated fictional scenario families with ten reviewed
 variants: an urgent account email, campus Wi-Fi poster, internship direct
 message, shared-document sign-in page, and a genuinely safe notification. Each
 round selects one local variant per family and shuffles the case order. Every case
 supports clue selection, false-positive explanations, a safety decision, evidence
-reveal, educational scoring, and a clean one-action reset.
-Timer, replay, staff controls, Playwright coverage, and burn-in testing are
-planned for later phases.
+reveal, educational scoring, and a clean one-action reset. Booth operation now
+includes an attract screen, optional standard or relaxed timer, sound-off default,
+difficulty filtering, direct staff scenario selection, and prepared offline
+replay. Playwright coverage and burn-in testing remain planned for Phase 4.
 
 The project is **not yet Open Day ready**. No formal event port has been allocated.
 
@@ -56,14 +57,19 @@ An event port must be recorded in the OpenDayOps registry and decisions log.
 
 ## Visitor and staff operation
 
-Choose one of five cases, flag suspicious regions, make a decision, review the
+Select **Tap to begin**, choose one of five cases, flag suspicious regions, make a decision, review the
 evidence, and view the result. **Reset for next visitor** or **Choose the next
 case** returns directly to the case list and clears the current score and choices.
 After a completed case, its exact variant is withheld from the next deck; the
 same scenario family remains available through its reviewed alternative. **Reset
 for next visitor** clears this temporary exclusion completely. Refresh the page if
 the browser ever becomes unresponsive. No generated or downloaded scenario text
-is used. Replay and dedicated staff controls are Phase 3 work.
+is used.
+
+Open the staff panel with the unobtrusive **Staff** button or `Ctrl+Alt+S`.
+Staff can configure timing, optional sound, difficulty, exact scenario selection,
+attract mode, next-visitor reset, and prepared replay. Replay is clearly labelled,
+uses only the seeded local deck, and stops on any key press or screen tap.
 
 ## Privacy and safety
 
@@ -74,11 +80,10 @@ submission, active QR destination, or real login form. See
 [`docs/SAFETY_AND_PRIVACY.md`](docs/SAFETY_AND_PRIVACY.md).
 
 Randomness is limited to selecting and ordering reviewed local variants. The
-randomiser accepts a seed internally so tests and future prepared replay can
+randomiser accepts a seed internally so tests and prepared replay can
 reproduce an exact deck.
 
 ## Current limitations
 
-- There is no timer, sound, replay mode, or staff panel yet.
 - End-to-end, viewport, offline-request, and reduced-motion automation are Phase 4.
 - A 60-minute booth burn-in and independent runbook rehearsal have not occurred.
