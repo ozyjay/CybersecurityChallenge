@@ -6,10 +6,12 @@ response, and receive concise educational feedback.
 
 ## Status
 
-Phase 1 (static vertical slice) is implemented with one curated fictional email
-scenario. It includes the attract screen, clue selection, decision, evidence
-reveal, result, and a one-action reset. Four-scenario selection, timer, replay,
-staff controls, Playwright coverage, and burn-in testing are planned later.
+MVP 0.2 includes four curated fictional scenarios with data-driven selection:
+an urgent account email, campus Wi-Fi poster, internship direct message, and
+shared-document sign-in page. Every case supports clue selection, a safety
+decision, evidence reveal, educational scoring, and a clean one-action reset.
+Timer, replay, staff controls, Playwright coverage, and burn-in testing are
+planned for later phases.
 
 The project is **not yet Open Day ready**. No formal event port has been allocated.
 
@@ -52,10 +54,11 @@ An event port must be recorded in the OpenDayOps registry and decisions log.
 
 ## Visitor and staff operation
 
-Select **Tap to begin**, flag suspicious regions, make a decision, review the
-evidence, and view the result. **Reset for next visitor** returns directly to the
-attract screen and clears all in-memory state. Refresh the page if the browser
-ever becomes unresponsive. Replay and dedicated staff controls are Phase 3 work.
+Choose one of four cases, flag suspicious regions, make a decision, review the
+evidence, and view the result. **Reset for next visitor** or **Choose the next
+case** returns directly to the case list and clears all in-memory state. Refresh
+the page if the browser ever becomes unresponsive. Replay and dedicated staff
+controls are Phase 3 work.
 
 ## Privacy and safety
 
@@ -67,7 +70,6 @@ submission, active QR destination, or real login form. See
 
 ## Current limitations
 
-- Only the urgent account warning scenario is implemented.
-- There is no timer, sound, replay mode, staff panel, or scenario picker yet.
+- There is no timer, sound, replay mode, or staff panel yet.
 - End-to-end, viewport, offline-request, and reduced-motion automation are Phase 4.
 - A 60-minute booth burn-in and independent runbook rehearsal have not occurred.

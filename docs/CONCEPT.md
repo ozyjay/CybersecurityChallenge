@@ -20,9 +20,9 @@ Cybersecurity careers are presented as a combination of investigation, careful
 design, verification, communication, and informed decision-making—not only the
 use of technical tools.
 
-## Scenario roadmap
+## Curated scenario set
 
-1. Urgent university account warning (Phase 1)
+1. Urgent university account warning
 2. Campus Wi-Fi QR poster
 3. Too-good-to-be-true internship
 4. Shared document login page

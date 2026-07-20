@@ -4,7 +4,8 @@ import { gameReducer, initialGameState, scoreGame } from "./game";
 
 describe("game state", () => {
   it("runs the main state transitions", () => {
-    let state = gameReducer(initialGameState, { type: "BEGIN" });
+    let state = gameReducer(initialGameState, { type: "BEGIN", scenarioId: accountWarning.id });
+    expect(state.scenarioId).toBe(accountWarning.id);
     state = gameReducer(state, { type: "TOGGLE_CLUE", clueId: "sender-mismatch" });
     state = gameReducer(state, { type: "TOGGLE_CLUE", clueId: "sender-mismatch" });
     expect(state.selectedClueIds).toEqual([]);
@@ -17,7 +18,7 @@ describe("game state", () => {
   });
 
   it.each(["INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ screen, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual(initialGameState);
+    expect(gameReducer({ screen, scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe" }, { type: "RESET" })).toEqual(initialGameState);
   });
 });
 

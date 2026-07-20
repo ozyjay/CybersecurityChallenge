@@ -12,12 +12,13 @@ allocation.
 
 ## Smoke test
 
-1. Confirm the attract screen and privacy statement are visible.
-2. Use Tab and Enter to start; select and deselect a clue.
+1. Confirm all four case choices and the privacy statement are visible.
+2. Use Tab and Enter to choose a case; select and deselect a clue.
 3. Make a decision, inspect all evidence cards, and view the result.
-4. Select **Reset for next visitor** and confirm the attract screen returns with
-   no previous clue count, decision, score, or result.
-5. Repeat once with touch or mouse input.
+4. Select **Choose the next case** and confirm the case list returns with no
+   previous clue count, decision, score, or result.
+5. Start a different scenario, use **Reset for next visitor**, and repeat once
+   with touch or mouse input.
 
 ## Staff script
 

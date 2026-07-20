@@ -24,13 +24,51 @@ export type EmailContent = {
   signoff: string;
 };
 
+export type MessageContent = {
+  kind: "message";
+  channelLabel: string;
+  sender: string;
+  receivedAt: string;
+  heading: string;
+  paragraphs: string[];
+  platformRequest: string;
+  paymentRequest: string;
+  companyDetails: string;
+};
+
+export type QrPosterContent = {
+  kind: "qr";
+  organisation: string;
+  headline: string;
+  offer: string;
+  scanLabel: string;
+  displayedUrl: string;
+  installationRequest: string;
+  permissions: string[];
+  supportText: string;
+};
+
+export type LoginContent = {
+  kind: "login";
+  serviceName: string;
+  pageUrl: string;
+  documentTitle: string;
+  sharedBy: string;
+  context: string;
+  credentialPrompt: string;
+  actionLabel: string;
+  supportText: string;
+};
+
+export type ScenarioContent = EmailContent | MessageContent | QrPosterContent | LoginContent;
+
 export type Scenario = {
   id: string;
   title: string;
   category: ScenarioCategory;
   difficulty: Difficulty;
   introduction: string;
-  content: EmailContent;
+  content: ScenarioContent;
   clues: Clue[];
   correctDecision: Decision;
   takeaway: string;

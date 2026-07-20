@@ -4,12 +4,13 @@ export type GameScreen = "INTRO" | "SCENARIO" | "DECISION" | "REVEAL" | "RESULT"
 
 export type GameState = {
   screen: GameScreen;
+  scenarioId: string | null;
   selectedClueIds: string[];
   decision: Decision | null;
 };
 
 export type GameAction =
-  | { type: "BEGIN" }
+  | { type: "BEGIN"; scenarioId: string }
   | { type: "TOGGLE_CLUE"; clueId: string }
   | { type: "OPEN_DECISION" }
   | { type: "DECIDE"; decision: Decision }
@@ -18,6 +19,7 @@ export type GameAction =
 
 export const initialGameState: GameState = {
   screen: "INTRO",
+  scenarioId: null,
   selectedClueIds: [],
   decision: null
 };
@@ -25,7 +27,9 @@ export const initialGameState: GameState = {
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "BEGIN":
-      return state.screen === "INTRO" ? { ...initialGameState, screen: "SCENARIO" } : state;
+      return state.screen === "INTRO" && action.scenarioId
+        ? { ...initialGameState, scenarioId: action.scenarioId, screen: "SCENARIO" }
+        : state;
     case "TOGGLE_CLUE": {
       if (state.screen !== "SCENARIO") return state;
       const selected = state.selectedClueIds.includes(action.clueId);

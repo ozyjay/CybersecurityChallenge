@@ -1,6 +1,6 @@
 import type { Scenario } from "../types/scenario";
 
-export const accountWarning: Scenario = {
+export const accountWarning = {
   id: "urgent-account-warning",
   title: "Urgent account warning",
   category: "email",
@@ -68,4 +68,4 @@ export const accountWarning: Scenario = {
   correctDecision: "escalate",
   takeaway: "Pause, verify the sender through an official channel, and report unexpected account warnings.",
   careerConnection: "Security analysts investigate reports like this and help organisations improve filters, warnings, and response processes."
-};
+} satisfies Scenario;

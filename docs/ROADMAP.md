@@ -10,8 +10,8 @@
 
 ## MVP 0.2 — Phases 2 and 3
 
-- Add three curated scenarios and data-driven scenario selection
-- Expand build-time schema/content validation
+- [x] Add three curated scenarios and data-driven scenario selection
+- [x] Expand build-time schema/content validation
 - Add optional timer/relaxed mode, sound-off default, and unobtrusive staff controls
 - Add prepared offline replay mode and staff scenario selection
 
