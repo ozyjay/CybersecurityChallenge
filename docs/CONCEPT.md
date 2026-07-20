@@ -1,0 +1,42 @@
+# Concept
+
+## Audience and experience
+
+The experience is designed for high-school students, parents, and the general
+public at a busy university booth. Instructions should be understandable within
+10–20 seconds and a round should take about 30–60 seconds.
+
+The visitor sees the attract screen, inspects a large fictional artefact, flags
+warning signs, makes a safety decision, reviews evidence, receives a learning-
+first score and career connection, then resets for the next visitor.
+
+## Learning outcomes
+
+Visitors should leave able to pause when a message creates pressure, inspect
+sender and destination details, avoid entering credentials through unexpected
+links, and verify or report through an official channel.
+
+Cybersecurity careers are presented as a combination of investigation, careful
+design, verification, communication, and informed decision-making—not only the
+use of technical tools.
+
+## Scenario roadmap
+
+1. Urgent university account warning (Phase 1)
+2. Campus Wi-Fi QR poster
+3. Too-good-to-be-true internship
+4. Shared document login page
+
+All names, organisations, identities, and addresses are fictional. The visual
+direction is an accessible investigation game: a dark, high-contrast booth frame,
+large simulated artefact, generous touch targets, explicit selected states, and
+clear evidence cards.
+
+## Public wording
+
+> Look for warning signs before you trust a message, link, or login page.
+
+> This is a fictional local simulation. It does not collect passwords or personal information.
+
+Avoid guarantees, blame, fear-based claims, or language suggesting one score
+proves that a person is safe in every real situation.
