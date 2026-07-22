@@ -10,6 +10,41 @@
 The default `4173` port is for development only. Do not present it as an event
 allocation.
 
+## Pre-event verification
+
+Install the Playwright Chromium browser once on the booth machine after
+`npm install`:
+
+```bash
+npx playwright install chromium
+```
+
+Before rehearsal, run the scenario validator, unit/component suite, production
+build and browser journeys:
+
+```bash
+npm run validate:scenarios
+npm test
+npm run build
+npm run test:e2e
+```
+
+The browser suite uses isolated local port `4174` by default and fails if it is
+occupied. This is an automated-test default, not an event allocation. Set a
+different permitted test port with `E2E_PORT` when required.
+
+Run the stability exercise on the intended booth machine and build:
+
+```bash
+npm run test:burn-in
+```
+
+It runs for 60 minutes by default, repeatedly completes a visitor case, exercises
+replay interruption every ten cycles, and fails on page errors, console errors or
+external requests. `BURN_IN_MINUTES` may shorten local proof runs, but a shortened
+run does not satisfy the readiness gate. Record the date, version, machine,
+duration, completed cycles and outcome in the event verification record.
+
 ## Smoke test
 
 1. Confirm the attract screen, **Tap to begin**, and privacy statement are visible.

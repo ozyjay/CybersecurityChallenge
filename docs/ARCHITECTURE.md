@@ -20,6 +20,7 @@ initial state.
 - `src/hooks/useCountdown.ts` owns cancellable timer behaviour.
 - `src/hooks/usePreparedReplay.ts` coordinates deterministic replay and
   capture-level visitor interruption.
+- `src/config.ts` validates an optional URL seed for reproducible prepared runs.
 - Scenario data files contain content only; they do not define UI behaviour.
 - `src/scenarios/validate.ts` enforces content constraints during startup/tests.
 - `src/state/game.ts` owns transitions and deterministic scoring.
@@ -66,13 +67,27 @@ must contain reviewed benign regions.
 ## Configuration
 
 Vite loads `APP_HOST` and `APP_PORT`; both development and preview servers use
-strict-port behaviour. The development launcher performs an early conflict check.
+strict-port behaviour. The development launcher performs an early conflict check
+through the shared port policy, which also rejects ModelDeck-owned ports.
 `DEMO_MODE` is reserved for later booth behaviours and currently documents that
 the application is in development mode.
+
+## Browser reliability checks
+
+Playwright serves the compiled static build on isolated local port `4174` and
+drives Chromium with one worker. The regular suite covers complete visitor and
+staff journeys, keyboard use, a compact touch viewport, reduced motion, operation
+after the browser context is placed offline, replay interruption, reset isolation,
+and repeated use. A runtime guard fails a journey on uncaught page errors, browser
+console errors, or requests outside the local preview origin.
+
+The burn-in uses the same production server and runtime guard. It repeatedly
+completes a seeded local case and periodically starts and interrupts prepared
+replay for the configured duration. Test reports and failure artefacts remain
+local and are ignored by Git.
 
 ## Extension points
 
 New prepared content variants can be added to the discriminated union with a
-matching renderer and region allowlist. Phase 4 can extend browser-level
-reliability coverage without changing the static runtime design. A backend is not
-an assumed extension point.
+matching renderer and region allowlist. Browser coverage can grow without
+changing the static runtime design. A backend is not an assumed extension point.

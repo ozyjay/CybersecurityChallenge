@@ -6,7 +6,7 @@ response, and receive concise educational feedback.
 
 ## Status
 
-MVP 0.4 includes five curated fictional scenario families with ten reviewed
+MVP 0.5 includes five curated fictional scenario families with ten reviewed
 variants: an urgent account email, campus Wi-Fi poster, internship direct
 message, shared-document sign-in page, and a genuinely safe notification. Each
 round selects one local variant per family and shuffles the case order. Every case
@@ -14,7 +14,9 @@ supports clue selection, false-positive explanations, a safety decision, evidenc
 reveal, educational scoring, and a clean one-action reset. Booth operation now
 includes an attract screen, optional standard or relaxed timer, sound-off default,
 difficulty filtering, direct staff scenario selection, and prepared offline
-replay. Playwright coverage and burn-in testing remain planned for Phase 4.
+replay. Phase 4 adds production-build browser journeys for visitor, keyboard,
+touch, compact viewport, reduced-motion, offline, staff, replay, reset, repeated
+cycle, runtime-network, and port-policy behaviour, plus a timed burn-in runner.
 
 The project is **not yet Open Day ready**. No formal event port has been allocated.
 
@@ -38,6 +40,8 @@ npm test                    # run unit and component tests
 npm run validate:scenarios  # check scenario source for unsafe content
 npm run build               # type-check and create the static dist/ build
 npm run preview             # preview the production build
+npm run test:e2e            # build and run production-browser journeys
+npm run test:burn-in         # build and run the 60-minute stability exercise
 ```
 
 ## Configuration
@@ -81,9 +85,10 @@ submission, active QR destination, or real login form. See
 
 Randomness is limited to selecting and ordering reviewed local variants. The
 randomiser accepts a seed internally so tests and prepared replay can
-reproduce an exact deck.
+reproduce an exact deck. Add `?seed=2026` to a local URL to replay a prepared
+unsigned 32-bit seed; invalid values fall back to normal session randomness.
 
 ## Current limitations
 
-- End-to-end, viewport, offline-request, and reduced-motion automation are Phase 4.
-- A 60-minute booth burn-in and independent runbook rehearsal have not occurred.
+- An independent operator still needs to complete the runbook rehearsal.
+- The event port and presentation rotation still require OpenDayOps acceptance.

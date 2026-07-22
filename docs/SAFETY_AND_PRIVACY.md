@@ -18,6 +18,11 @@ domains. Source validation scans all five family files. Tests also guard against
 credential and personal-data input markup. Validation is defence in depth; every
 content change still requires human review.
 
+Production-browser journeys also monitor runtime requests and fail if the page
+contacts an origin other than its local preview server. Offline coverage switches
+the loaded browser context offline and completes a full visitor journey, guarding
+the local-only runtime assumption.
+
 ## Storage and reset policy
 
 Visitor interactions live only in volatile component state. Nothing is written to

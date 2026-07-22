@@ -18,11 +18,11 @@
 
 ## Rehearsal and Phase 4
 
-- Add Playwright journey, keyboard, viewport, reduced-motion, offline-network,
+- [x] Add Playwright journey, keyboard, viewport, reduced-motion, offline-network,
   timer, replay, reset, and port-conflict coverage
-- Test static production serving and verify no unexpected network requests
-- Complete a 60-minute burn-in with no uncaught errors
-- Have someone unfamiliar with the code operate the demo from the runbook
+- [x] Test static production serving and verify no unexpected network requests
+- [x] Complete a 60-minute burn-in with no uncaught errors
+- [ ] Have someone unfamiliar with the code operate the demo from the runbook
 
 ## Open Day readiness gates
 
