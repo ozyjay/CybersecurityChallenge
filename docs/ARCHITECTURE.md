@@ -82,6 +82,12 @@ through the shared port policy, which also rejects ModelDeck-owned ports.
 `DEMO_MODE` is reserved for later booth behaviours and currently documents that
 the application is in development mode.
 
+Node launchers resolve TypeScript, Vite, Vitest, and Playwright from the local
+`node_modules` tree and execute them with `process.execPath`. Browser checks
+preflight Playwright-managed Chromium and never fall back to a confined Snap
+browser. Direct `node scripts/*.mjs` entry points remain available when a system
+package-manager shim is unsuitable.
+
 ## Browser reliability checks
 
 Playwright serves the compiled static build on isolated local port `4174` and

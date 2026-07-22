@@ -18,7 +18,7 @@ export default defineConfig({
     video: "retain-on-failure"
   },
   webServer: {
-    command: "npm run preview",
+    command: `${JSON.stringify(process.execPath)} scripts/run-preview.mjs`,
     url: baseURL,
     env: { APP_HOST: "127.0.0.1", APP_PORT: String(port), DEMO_MODE: "development" },
     reuseExistingServer: false,

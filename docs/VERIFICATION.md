@@ -41,3 +41,13 @@ port `4174`; this is not an event port allocation.
 - Required 60-minute burn-in: not repeated for this change
 - Independent operator runbook rehearsal: pending
 - OpenDayOps event port and presentation rotation: pending
+
+## Snap-resistant local tooling — 23 July 2026
+
+- Project-local TypeScript, Vite, Vitest, and Playwright launchers: passed
+- Playwright-managed Chromium preflight: passed without a system browser fallback
+- Unit and component tests: passed, 105 tests
+- Production build through the local launcher: passed
+- Direct Node production-browser journey: passed, eleven tests and one expected
+  burn-in skip with no unexpected network requests
+- Required 60-minute burn-in: not repeated for this tooling change

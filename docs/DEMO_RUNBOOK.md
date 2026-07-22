@@ -12,11 +12,10 @@ allocation.
 
 ## Pre-event verification
 
-Install the Playwright Chromium browser once on the booth machine after
-`npm install`:
+Install Playwright-managed Chromium once on the booth machine after `npm install`:
 
 ```bash
-npx playwright install chromium
+npm run install:browsers
 ```
 
 Before rehearsal, run the scenario validator, unit/component suite, production
@@ -32,6 +31,12 @@ npm run test:e2e
 The browser suite uses isolated local port `4174` by default and fails if it is
 occupied. This is an automated-test default, not an event allocation. Set a
 different permitted test port with `E2E_PORT` when required.
+
+The project launchers execute local tools through the active Node process and do
+not call `npx` or a system browser. Snap-packaged Chromium is deliberately ignored
+because its confinement can prevent reliable Playwright automation. If an
+installed package-manager shim is also confined, run `node scripts/run-e2e.mjs`
+or the corresponding direct script documented in the README.
 
 Run the stability exercise on the intended booth machine and build:
 

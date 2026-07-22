@@ -42,9 +42,27 @@ npm test                    # run unit and component tests
 npm run validate:scenarios  # check scenario source for unsafe content
 npm run build               # type-check and create the static dist/ build
 npm run preview             # preview the production build
+npm run install:browsers    # install Playwright-managed Chromium once
 npm run test:e2e            # build and run production-browser journeys
 npm run test:burn-in         # build and run the 60-minute stability exercise
 ```
+
+Project scripts launch the checked-in dependency versions from `node_modules`
+through the active Node executable. They do not rely on `npx`, globally installed
+tools, or Snap-packaged Chromium. If a confined package-manager shim is still
+unreliable, use the equivalent direct entry points:
+
+```bash
+node scripts/start-dev.mjs
+node scripts/build.mjs
+node scripts/run-vitest.mjs run
+node scripts/run-e2e.mjs
+```
+
+Browser checks deliberately require Playwright-managed Chromium. Install it with
+`npm run install:browsers`, or directly with
+`node scripts/install-playwright-browser.mjs`; this is the only step that downloads
+a browser and should be completed before offline event use.
 
 ## Configuration
 
