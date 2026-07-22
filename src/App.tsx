@@ -75,6 +75,21 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
       ? scoreCipher(state.cipherHintsUsed, state.cipherIncorrectAttempts)
       : scoreGame(scenario, state.selectedClueIds, state.decision)
     : null;
+  const cipherWords = scenario?.activity === "cipher" ? scenario.content.plaintext.split(" ") : [];
+  const cipherAttemptCorrect = scenario?.activity === "cipher" && (
+    scenario.content.cipherType === "caesar"
+      ? state.cipherShift === scenario.content.shift
+      : scenario.content.cipherType === "vigenere"
+        ? state.cipherKeyword === scenario.content.keyword
+        : state.cipherDraft === cipherWords[state.cipherWordIndex]
+  );
+  const cipherRevealLabel = scenario?.activity === "cipher"
+    ? scenario.content.cipherType === "caesar"
+      ? `Shift ${scenario.content.shift}`
+      : scenario.content.cipherType === "vigenere"
+        ? `Keyword ${scenario.content.keyword}`
+        : scenario.content.cipherType === "atbash" ? "Mirrored alphabet" : "Number square"
+    : "";
   const replay = usePreparedReplay({ state, deck, dispatch, loop: staffSettings.replayLoop, stepMilliseconds: replayStepMilliseconds });
 
   const handleTimerExpiry = useCallback(() => {
@@ -180,22 +195,27 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
                 selectedClueIds={state.selectedClueIds}
                 cipherShift={state.cipherShift}
                 cipherWordIndex={state.cipherWordIndex}
+                cipherDraft={state.cipherDraft}
+                cipherKeyword={state.cipherKeyword}
                 interactive={state.screen === "SCENARIO" && !state.isReplay}
                 onToggle={(clueId) => dispatch({ type: "TOGGLE_CLUE", clueId })}
                 onCipherShiftChange={(shift) => dispatch({ type: "SET_CIPHER_SHIFT", shift })}
+                onCipherLetter={(letter) => dispatch({ type: "APPEND_CIPHER_LETTER", letter })}
+                onCipherBackspace={() => dispatch({ type: "REMOVE_CIPHER_LETTER" })}
+                onCipherKeyword={(keyword) => dispatch({ type: "SET_CIPHER_KEYWORD", keyword })}
               />
               <aside className="action-panel" aria-label={scenario.activity === "cipher" ? "Cipher controls" : "Investigation controls"}>
                 {state.isReplay ? <><h2>Prepared demonstration</h2><p>This reviewed example is progressing automatically. Tap or press any key to return to the attract screen.</p></> : state.screen === "SCENARIO" ? <>
                   {scenario.activity === "cipher" ? <>
                     <h2>{countdown.expired ? "Time’s up — keep going" : "Find the readable message"}</h2>
-                    <p>Adjust the shift, then lock in each word. The same shift carries forward so you can see why this cipher is easy to break.</p>
+                    <p>Use the decoder designed for this cipher, then lock in each word. Any discovered key or mapping carries forward.</p>
                     {state.cipherHintsUsed > 0 && <ol className="hint-list" aria-label="Cipher hints">{scenario.content.hints.slice(0, state.cipherHintsUsed).map((hint) => <li key={hint}>{hint}</li>)}</ol>}
-                    {state.cipherAttemptIncorrect && <p className="attempt-status" role="status">That word is not readable yet — adjust the shift and try again.</p>}
+                    {state.cipherAttemptIncorrect && <p className="attempt-status" role="status">That word is not readable yet — adjust the decoder and try again.</p>}
                     {state.cipherHintsUsed < 2 && <button className="quiet-button" type="button" onClick={() => dispatch({ type: "SHOW_CIPHER_HINT" })}>Show hint {state.cipherHintsUsed + 1}</button>}
                     <button className="primary-button" type="button" onClick={() => dispatch({
                       type: "SUBMIT_CIPHER",
-                      correct: state.cipherShift === scenario.content.shift,
-                      lastWord: state.cipherWordIndex === scenario.content.plaintext.split(" ").length - 1
+                      correct: cipherAttemptCorrect,
+                      lastWord: state.cipherWordIndex === cipherWords.length - 1
                     })}>Lock in word</button>
                     <button className="text-button" type="button" onClick={() => dispatch({ type: "RETURN_TO_CASES" })}>Choose another case</button>
                   </> : <>
@@ -224,7 +244,7 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
             <h1 id="reveal-title">{scenario.activity === "cipher" ? "Message decoded" : "Here’s what the scenario was hiding"}</h1>
             {scenario.activity === "cipher" ? <>
               <p className="lead"><strong>{scenario.content.plaintext}</strong></p>
-              <div className="evidence-grid"><article className="evidence-card safe-evidence"><span className="status found">✓ Shift {scenario.content.shift}</span><h2>Why this cipher is weak</h2><p>{scenario.content.revealExplanation}</p></article></div>
+              <div className="evidence-grid"><article className="evidence-card safe-evidence"><span className="status found">✓ {cipherRevealLabel}</span><h2>Why this cipher is weak</h2><p>{scenario.content.revealExplanation}</p></article></div>
             </> : <>
               <p className="lead">The response was <strong>{state.decision ? decisionLabels[state.decision] : "not selected"}</strong>. The recommended response is <strong>{decisionLabels[scenario.correctDecision]}</strong>.</p>
               <div className="evidence-grid">

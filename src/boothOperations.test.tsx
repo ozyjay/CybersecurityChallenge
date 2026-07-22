@@ -32,7 +32,7 @@ describe("staff controls", () => {
     await user.selectOptions(screen.getByLabelText(/difficulty/i), "starter");
     await user.click(screen.getByRole("button", { name: /close staff controls/i }));
     await user.click(screen.getByRole("button", { name: /tap to begin/i }));
-    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(5);
   });
 
   it("starts a selected case and returns to attract mode without terminal commands", async () => {

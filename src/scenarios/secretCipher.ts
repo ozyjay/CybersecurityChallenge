@@ -9,6 +9,7 @@ export const secretCipher = {
   introduction: "Rotate the alphabet until this historical cipher reveals a readable message.",
   content: {
     kind: "cipher",
+    cipherType: "caesar",
     ciphertext: "ROG FLSKHUV KLGH WHAW EXW GR QRW NHHS LW VDIH",
     plaintext: "OLD CIPHERS HIDE TEXT BUT DO NOT KEEP IT SAFE",
     shift: 3,
@@ -22,6 +23,7 @@ export const secretCipher = {
       id: "modern-encryption",
       content: {
         kind: "cipher",
+        cipherType: "caesar",
         ciphertext: "TVKLYU LUJYFWAPVU BZLZ ALZALK TLAOVKZ HUK ZAYVUN RLFZ",
         plaintext: "MODERN ENCRYPTION USES TESTED METHODS AND STRONG KEYS",
         shift: 7,

@@ -48,7 +48,7 @@ duration, completed cycles and outcome in the event verification record.
 ## Smoke test
 
 1. Confirm the attract screen, **Tap to begin**, and privacy statement are visible.
-2. Use Tab and Enter to open the six-case selection; choose an investigation and select
+2. Use Tab and Enter to open the nine-case selection; choose an investigation and select
    and deselect a clue.
 3. Make a decision, inspect all evidence cards, and view the result.
 4. Select **Choose the next case** and confirm the case list returns with no
@@ -57,9 +57,11 @@ duration, completed cycles and outcome in the event verification record.
 5. Start a different scenario, use **Reset for next visitor**, and repeat once
    with touch or mouse input. Confirm the case order or wording may change while
    remaining within the prepared scenario set and no prior completion is retained.
-6. Open **Decode the secret message**, rotate the shift with keyboard or touch,
-   request both hints, try one incorrect lock-in, and complete the decryption.
-   Confirm reset removes the shift, hints, attempts, and score.
+6. Open each cipher family and confirm its tailored controls: shift dial,
+   mirrored-alphabet buttons, Polybius coordinate grid, and reviewed Vigenère
+   keyword cards. Request hints, try an incorrect lock-in, and complete one
+   decryption. Confirm reset removes all selections, word progress, hints,
+   attempts, and score.
 
 ## Staff controls
 

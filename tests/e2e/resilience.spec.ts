@@ -21,7 +21,7 @@ test("compact touch viewport keeps primary controls available", async ({ page })
   await page.goto("/?seed=42");
   await page.getByRole("button", { name: /tap to begin/i }).click();
   const choices = page.getByRole("button", { name: /play this case/i });
-  await expect(choices).toHaveCount(6);
+  await expect(choices).toHaveCount(9);
   const box = await choices.first().boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x).toBeGreaterThanOrEqual(0);

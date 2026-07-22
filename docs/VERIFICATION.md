@@ -30,3 +30,14 @@ port `4174`; this is not an event port allocation.
 - Required 60-minute burn-in: not repeated for this change
 - Independent operator runbook rehearsal: pending
 - OpenDayOps event port and presentation rotation: pending
+
+## Additional cipher families — 23 July 2026
+
+- Scenario validation: passed, nine scenario files and eighteen materialised variants
+- Unit and component tests: passed, 100 tests
+- Production build: passed
+- Chromium production-browser journeys: passed, eleven tests and one expected
+  burn-in skip, including method-specific cipher controls and the runtime-network guard
+- Required 60-minute burn-in: not repeated for this change
+- Independent operator runbook rehearsal: pending
+- OpenDayOps event port and presentation rotation: pending

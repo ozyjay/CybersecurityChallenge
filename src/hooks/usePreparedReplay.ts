@@ -53,7 +53,12 @@ export function usePreparedReplay({ state, deck, dispatch, loop, stepMillisecond
       switch (stage) {
         case 0:
           if (scenario!.activity === "cipher") {
-            dispatch({ type: "SET_REPLAY_CIPHER", shift: scenario!.content.shift });
+            const content = scenario!.content;
+            dispatch({
+              type: "SET_REPLAY_CIPHER",
+              shift: content.cipherType === "caesar" ? content.shift : undefined,
+              keyword: content.cipherType === "vigenere" ? content.keyword : undefined
+            });
             setStage(3);
           } else {
             dispatch({ type: "SET_REPLAY_CLUES", clueIds: scenario!.clues.slice(0, 3).map((clue) => clue.id) });

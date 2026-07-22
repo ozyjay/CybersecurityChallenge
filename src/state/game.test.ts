@@ -22,7 +22,7 @@ describe("game state", () => {
   });
 
   it.each(["ATTRACT", "INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ ...initialGameState, screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", cipherShift: 9, cipherWordIndex: 4, cipherHintsUsed: 2, cipherIncorrectAttempts: 3, cipherAttemptIncorrect: true }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+    expect(gameReducer({ ...initialGameState, screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", cipherShift: 9, cipherWordIndex: 4, cipherHintsUsed: 2, cipherIncorrectAttempts: 3, cipherAttemptIncorrect: true, cipherDraft: "WORD", cipherKeyword: "ORBIT" }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
   });
 
   it("tracks cipher shifts, hints, attempts, and successful submission", () => {
@@ -38,6 +38,17 @@ describe("game state", () => {
     state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: false });
     expect(state).toMatchObject({ screen: "SCENARIO", cipherWordIndex: 1, cipherAttemptIncorrect: false });
     expect(gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: true }).screen).toBe("REVEAL");
+  });
+
+  it("tracks button-built words and reviewed keyword choices", () => {
+    let state = gameReducer(initialGameState, { type: "START_SCENARIO", scenarioId: "atbash-mirror-cipher:original" });
+    state = gameReducer(state, { type: "APPEND_CIPHER_LETTER", letter: "P" });
+    state = gameReducer(state, { type: "APPEND_CIPHER_LETTER", letter: "A" });
+    expect(state.cipherDraft).toBe("PA");
+    state = gameReducer(state, { type: "REMOVE_CIPHER_LETTER" });
+    expect(state.cipherDraft).toBe("P");
+    state = gameReducer(state, { type: "SET_CIPHER_KEYWORD", keyword: "ORBIT" });
+    expect(state.cipherKeyword).toBe("ORBIT");
   });
 
   it("excludes only the completed variant when continuing", () => {

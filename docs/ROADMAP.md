@@ -26,7 +26,7 @@
 
 ## Open Day readiness gates
 
-Do not label the project Open Day ready until all six scenarios are polished,
+Do not label the project Open Day ready until all nine scenarios are polished,
 instructions test clearly within 10–20 seconds, reset and offline replay work,
 privacy/safety and staff operation are independently verified, keyboard and touch
 work, the 60-minute burn-in passes, and the event port plus presentation rotation

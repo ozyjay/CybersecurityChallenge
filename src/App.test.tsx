@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import App from "./App";
@@ -48,7 +48,7 @@ describe("visitor journeys", () => {
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /choose the next case/i }));
     expect(screen.getByRole("heading", { name: /which case will you inspect/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(6);
+    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(9);
     expect(screen.getByRole("button", { name: new RegExp(scenario.title, "i") })).not.toHaveAttribute("data-scenario-id", scenario.id);
   });
 
@@ -75,11 +75,23 @@ describe("visitor journeys", () => {
     expect(screen.getByText(/not readable yet/i)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /show hint 1/i }));
     expect(screen.getByText(scenario.content.hints[0])).toBeInTheDocument();
-    for (let step = 0; step < scenario.content.shift; step += 1) {
-      await user.click(screen.getByRole("button", { name: /next shift/i }));
+    const decoder = within(screen.getByLabelText(new RegExp(`${scenario.content.cipherType} cipher decoder`, "i")));
+    if (scenario.content.cipherType === "caesar") {
+      for (let step = 0; step < scenario.content.shift; step += 1) await user.click(decoder.getByRole("button", { name: /next shift/i }));
+    } else if (scenario.content.cipherType === "vigenere") {
+      await user.click(decoder.getByRole("button", { name: scenario.content.keyword }));
     }
-    expect(screen.getByText(scenario.content.plaintext.split(" ")[0], { selector: ".decoded-text" })).toBeInTheDocument();
-    for (const _word of scenario.content.plaintext.split(" ")) {
+    if (scenario.content.cipherType === "caesar" || scenario.content.cipherType === "vigenere") {
+      expect(screen.getByText(scenario.content.plaintext.split(" ")[0], { selector: ".decoded-text" })).toBeInTheDocument();
+    }
+    const plaintextWords = scenario.content.plaintext.split(" ");
+    const cipherWords = scenario.content.ciphertext.split(" ");
+    for (const [wordIndex, word] of plaintextWords.entries()) {
+      if (scenario.content.cipherType === "atbash") {
+        for (const letter of word) await user.click(decoder.getByRole("button", { name: letter }));
+      } else if (scenario.content.cipherType === "polybius") {
+        for (const pair of cipherWords[wordIndex].split("-")) await user.click(decoder.getByRole("button", { name: new RegExp(`^${pair},`) }));
+      }
       await user.click(screen.getByRole("button", { name: /lock in word/i }));
     }
     expect(screen.getByRole("heading", { name: /message decoded/i })).toBeInTheDocument();

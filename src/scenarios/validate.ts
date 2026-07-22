@@ -1,4 +1,4 @@
-import { decodeCaesar } from "../cipher";
+import { decodeAtbash, decodeCaesar, decodePolybius, decodeVigenere } from "../cipher";
 import type { InvestigationContent, Scenario } from "../types/scenario";
 
 const allowedDomains = ["example.com", "example.org", "example.net"];
@@ -71,18 +71,36 @@ export function validateScenario(value: unknown): string[] {
       for (const field of ["ciphertext", "plaintext", "revealExplanation"] as const) {
         if (!presentString(value.content[field])) errors.push(`cipher content requires a non-empty ${field}.`);
       }
-      if (!Number.isInteger(value.content.shift) || Number(value.content.shift) < 1 || Number(value.content.shift) > 25) {
-        errors.push("Cipher shift must be an integer from 1 to 25.");
-      }
       if (!Array.isArray(value.content.hints) || value.content.hints.length !== 2 || value.content.hints.some((hint) => !presentString(hint))) {
         errors.push("Cipher content requires exactly two non-empty hints.");
       }
-      if (presentString(value.content.ciphertext) && presentString(value.content.plaintext) && Number.isInteger(value.content.shift) && Number(value.content.shift) >= 1 && Number(value.content.shift) <= 25) {
-        if (decodeCaesar(value.content.ciphertext, Number(value.content.shift)) !== value.content.plaintext) {
-          errors.push("Ciphertext, plaintext, and shift do not match.");
-        }
+      if (!presentString(value.content.cipherType) || !["caesar", "atbash", "polybius", "vigenere"].includes(value.content.cipherType)) {
+        errors.push("Cipher content requires a supported cipher type.");
+      }
+      if (presentString(value.content.ciphertext) && presentString(value.content.plaintext)) {
         if (value.content.ciphertext.split(" ").length !== value.content.plaintext.split(" ").length) {
           errors.push("Ciphertext and plaintext must contain the same number of words.");
+        }
+        try {
+          let decoded: string | null = null;
+          if (value.content.cipherType === "caesar") {
+            if (!Number.isInteger(value.content.shift) || Number(value.content.shift) < 1 || Number(value.content.shift) > 25) {
+              errors.push("Cipher shift must be an integer from 1 to 25.");
+            } else decoded = decodeCaesar(value.content.ciphertext, Number(value.content.shift));
+          } else if (value.content.cipherType === "atbash") {
+            decoded = decodeAtbash(value.content.ciphertext);
+          } else if (value.content.cipherType === "polybius") {
+            decoded = decodePolybius(value.content.ciphertext);
+          } else if (value.content.cipherType === "vigenere") {
+            if (!presentString(value.content.keyword) || !/^[A-Z]+$/.test(value.content.keyword)) errors.push("Vigenère cipher requires an uppercase A–Z keyword.");
+            if (!Array.isArray(value.content.keywordOptions) || value.content.keywordOptions.length !== 3 || value.content.keywordOptions.some((option) => !presentString(option) || !/^[A-Z]+$/.test(option)) || new Set(value.content.keywordOptions).size !== 3 || !value.content.keywordOptions.includes(value.content.keyword)) {
+              errors.push("Vigenère cipher requires three unique uppercase keyword options including the correct keyword.");
+            }
+            if (presentString(value.content.keyword) && /^[A-Z]+$/.test(value.content.keyword)) decoded = decodeVigenere(value.content.ciphertext, value.content.keyword);
+          }
+          if (decoded !== null && decoded !== value.content.plaintext) errors.push("Ciphertext, plaintext, and cipher settings do not match.");
+        } catch {
+          errors.push("Ciphertext contains invalid values for its cipher type.");
         }
       }
     }

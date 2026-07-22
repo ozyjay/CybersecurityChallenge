@@ -14,6 +14,8 @@ export type GameState = {
   cipherHintsUsed: number;
   cipherIncorrectAttempts: number;
   cipherAttemptIncorrect: boolean;
+  cipherDraft: string;
+  cipherKeyword: string;
   isReplay: boolean;
 };
 
@@ -27,9 +29,12 @@ export type GameAction =
   | { type: "OPEN_DECISION" }
   | { type: "DECIDE"; decision: Decision }
   | { type: "SET_CIPHER_SHIFT"; shift: number }
+  | { type: "APPEND_CIPHER_LETTER"; letter: string }
+  | { type: "REMOVE_CIPHER_LETTER" }
+  | { type: "SET_CIPHER_KEYWORD"; keyword: string }
   | { type: "SHOW_CIPHER_HINT" }
   | { type: "SUBMIT_CIPHER"; correct: boolean; lastWord: boolean }
-  | { type: "SET_REPLAY_CIPHER"; shift: number }
+  | { type: "SET_REPLAY_CIPHER"; shift?: number; keyword?: string }
   | { type: "SHOW_RESULT" }
   | { type: "NEXT_CASE" }
   | { type: "RETURN_TO_CASES" }
@@ -49,6 +54,8 @@ export const initialGameState: GameState = {
   cipherHintsUsed: 0,
   cipherIncorrectAttempts: 0,
   cipherAttemptIncorrect: false,
+  cipherDraft: "",
+  cipherKeyword: "",
   isReplay: false
 };
 
@@ -88,6 +95,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return state.screen === "SCENARIO" && Number.isInteger(action.shift)
         ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26, cipherAttemptIncorrect: false }
         : state;
+    case "APPEND_CIPHER_LETTER":
+      return state.screen === "SCENARIO" && /^[A-Z]$/.test(action.letter)
+        ? { ...state, cipherDraft: `${state.cipherDraft}${action.letter}`, cipherAttemptIncorrect: false }
+        : state;
+    case "REMOVE_CIPHER_LETTER":
+      return state.screen === "SCENARIO"
+        ? { ...state, cipherDraft: state.cipherDraft.slice(0, -1), cipherAttemptIncorrect: false }
+        : state;
+    case "SET_CIPHER_KEYWORD":
+      return state.screen === "SCENARIO" && /^[A-Z]+$/.test(action.keyword)
+        ? { ...state, cipherKeyword: action.keyword, cipherAttemptIncorrect: false }
+        : state;
     case "SHOW_CIPHER_HINT":
       return state.screen === "SCENARIO" ? { ...state, cipherHintsUsed: Math.min(2, state.cipherHintsUsed + 1) } : state;
     case "SUBMIT_CIPHER":
@@ -95,11 +114,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return action.correct
         ? action.lastWord
           ? { ...state, screen: "REVEAL" }
-          : { ...state, cipherWordIndex: state.cipherWordIndex + 1, cipherAttemptIncorrect: false }
+          : { ...state, cipherWordIndex: state.cipherWordIndex + 1, cipherDraft: "", cipherAttemptIncorrect: false }
         : { ...state, cipherIncorrectAttempts: state.cipherIncorrectAttempts + 1, cipherAttemptIncorrect: true };
     case "SET_REPLAY_CIPHER":
       return state.screen === "SCENARIO" && state.isReplay
-        ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26, screen: "REVEAL" }
+        ? { ...state, cipherShift: action.shift === undefined ? state.cipherShift : ((action.shift % 26) + 26) % 26, cipherKeyword: action.keyword ?? state.cipherKeyword, screen: "REVEAL" }
         : state;
     case "SHOW_RESULT":
       return state.screen === "REVEAL" ? { ...state, screen: "RESULT" } : state;

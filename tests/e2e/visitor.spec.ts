@@ -6,7 +6,7 @@ test("visitor completes a case and receives an alternate variant", async ({ page
   await page.goto("/?seed=42");
   await expect(page.getByRole("heading", { name: /can you spot the warning signs/i })).toBeVisible();
   await page.getByRole("button", { name: /tap to begin/i }).click();
-  await expect(page.getByRole("button", { name: /play this case/i })).toHaveCount(6);
+  await expect(page.getByRole("button", { name: /play this case/i })).toHaveCount(9);
 
   const caseButton = page.getByRole("button", { name: /urgent account warning/i });
   const firstVariant = await caseButton.getAttribute("data-scenario-id");
@@ -36,6 +36,26 @@ test("visitor decodes a local cipher without network activity", async ({ page })
   await expect(page.getByRole("heading", { name: /message decoded/i })).toBeVisible();
   await page.getByRole("button", { name: /see my result/i }).click();
   await expect(page.getByText(/out of 100 points/i)).toBeVisible();
+  runtime.assertClean();
+});
+
+test("cipher families provide method-specific controls", async ({ page }) => {
+  const runtime = guardLocalRuntime(page);
+  await page.goto("/?seed=42");
+
+  await page.getByRole("button", { name: /tap to begin/i }).click();
+  await page.getByRole("button", { name: /mirror the alphabet/i }).click();
+  await expect(page.getByLabel(/atbash cipher decoder/i).getByRole("button", { name: "Z" })).toBeVisible();
+  await page.getByRole("button", { name: /reset for next visitor/i }).click();
+
+  await page.getByRole("button", { name: /tap to begin/i }).click();
+  await page.getByRole("button", { name: /crack the number square/i }).click();
+  await expect(page.getByLabel(/polybius cipher decoder/i).getByRole("button", { name: /11, A/i })).toBeVisible();
+  await page.getByRole("button", { name: /reset for next visitor/i }).click();
+
+  await page.getByRole("button", { name: /tap to begin/i }).click();
+  await page.getByRole("button", { name: /test the repeating keyword/i }).click();
+  await expect(page.getByLabel(/vigenere cipher decoder/i).getByRole("button", { pressed: false })).toHaveCount(3);
   runtime.assertClean();
 });
 

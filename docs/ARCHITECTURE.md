@@ -12,7 +12,7 @@ initial state.
 - `src/App.tsx` coordinates screens and visitor actions.
 - `src/components/ScenarioDisplay.tsx` dispatches to format-specific renderers.
 - `src/components/SelectableRegion.tsx` provides shared accessible clue controls.
-- `src/scenarios/index.ts` exposes six local scenario families and twelve variants.
+- `src/scenarios/index.ts` exposes nine local scenario families and eighteen variants.
 - `src/scenarios/randomise.ts` selects one variant per family and shuffles the
   deck through a deterministic seeded pseudo-random generator.
 - `src/components/StaffControls.tsx` provides session-only booth settings and
@@ -28,9 +28,10 @@ initial state.
 
 Investigation cases follow `ATTRACT → INTRO → SCENARIO → DECISION → REVEAL → RESULT`.
 Cipher cases follow `ATTRACT → INTRO → SCENARIO → REVEAL → RESULT` and retain
-their shift, current word, hint count, and incorrect attempts only in volatile
-game state. Solving a word advances through the authored message without
-resetting the shift, demonstrating the weakness of a repeated Caesar key.
+their method-specific selection, current word, hint count, and incorrect attempts
+only in volatile game state. Solving a word advances through the authored message
+without discarding a discovered shift, mapping, or keyword.
+
 `BEGIN` records the selected variant identifier. From the result screen,
 `NEXT_CASE` records that completed variant, increments the in-memory round seed,
 and returns to `INTRO`. The next deck excludes only that exact variant, leaving
@@ -54,11 +55,13 @@ performs a clean next-visitor reset. Scheduled replay steps are disposed wheneve
 the stage changes or replay is interrupted.
 
 `Scenario` and `ScenarioContent` are discriminated unions. The current content
-kinds are email, direct message, QR poster, sign-in page, and cipher. Investigation renderers map their prepared
-content regions to clue identifiers through the shared selectable-region control.
+kinds are email, direct message, QR poster, sign-in page, and cipher.
+Investigation renderers map their prepared content regions to clue identifiers
+through the shared selectable-region control.
 The QR pattern and credential fields are inert visual elements, not links or
-inputs. The cipher renderer applies only a fixed A–Z Caesar shift to reviewed
-local text; it has no free-text input.
+inputs. Cipher renderers apply reviewed Caesar, Atbash, Polybius, or Vigenère
+decoding rules to local text. Visitors interact through large shift, alphabet,
+coordinate-grid, or keyword buttons; there is no free-text input.
 
 Each `ScenarioFamily` contains a reviewed base case plus reviewed variants. At
 session start and after a case transition, the app derives a deck from a random

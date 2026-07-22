@@ -6,13 +6,14 @@ response, and receive concise educational feedback.
 
 ## Status
 
-The current build includes six curated fictional scenario families with twelve reviewed
+The current build includes nine curated fictional scenario families with eighteen reviewed
 variants: an urgent account email, campus Wi-Fi poster, internship direct
-message, shared-document sign-in page, a genuinely safe notification, and a
-local Caesar cipher puzzle. Each
-round selects one local variant per family and shuffles the case order. Every case
-supports clue selection, false-positive explanations, a safety decision, evidence
-reveal, educational scoring, and a clean one-action reset. Booth operation now
+message, shared-document sign-in page, a genuinely safe notification, and four
+local cipher puzzles covering Caesar, Atbash, Polybius, and Vigenère methods. Each
+round selects one local variant per family and shuffles the case order.
+Investigation cases support clue selection and a safety decision; cipher cases
+use tailored decoding controls. Every case includes a reveal, educational
+scoring, and a clean one-action reset. Booth operation now
 includes an attract screen, optional standard or relaxed timer, sound-off default,
 difficulty filtering, direct staff scenario selection, and prepared offline
 replay. Phase 4 adds production-build browser journeys for visitor, keyboard,
@@ -62,9 +63,10 @@ An event port must be recorded in the OpenDayOps registry and decisions log.
 
 ## Visitor and staff operation
 
-Select **Tap to begin** and choose one of six cases. Investigation cases ask you
-to flag suspicious regions and make a safety decision; the cipher case asks you
-to rotate an alphabet shift and decode a prepared message. Review the reveal and
+Select **Tap to begin** and choose one of nine cases. Investigation cases ask you
+to flag suspicious regions and make a safety decision; cipher cases provide a
+method-specific shift dial, mirrored alphabet, coordinate square, or reviewed
+keyword choices. Review the reveal and
 view the result. **Reset for next visitor** or **Choose the next
 case** returns directly to the case list and clears the current score and choices.
 After a completed case, its exact variant is withheld from the next deck; the

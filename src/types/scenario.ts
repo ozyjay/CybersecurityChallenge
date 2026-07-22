@@ -66,14 +66,24 @@ export type LoginContent = {
 
 export type InvestigationContent = EmailContent | MessageContent | QrPosterContent | LoginContent;
 
-export type CipherContent = {
+type CipherContentBase = {
   kind: "cipher";
   ciphertext: string;
   plaintext: string;
-  shift: number;
   hints: [string, string];
   revealExplanation: string;
 };
+
+export type CaesarCipherContent = CipherContentBase & { cipherType: "caesar"; shift: number };
+export type AtbashCipherContent = CipherContentBase & { cipherType: "atbash" };
+export type PolybiusCipherContent = CipherContentBase & { cipherType: "polybius" };
+export type VigenereCipherContent = CipherContentBase & {
+  cipherType: "vigenere";
+  keyword: string;
+  keywordOptions: [string, string, string];
+};
+
+export type CipherContent = CaesarCipherContent | AtbashCipherContent | PolybiusCipherContent | VigenereCipherContent;
 
 export type ScenarioContent = InvestigationContent | CipherContent;
 
