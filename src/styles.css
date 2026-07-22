@@ -112,6 +112,8 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--yellow); outlin
 .cipher-body h2 { margin: 0 0 .7rem; color: #274955; font-size: 1rem; text-transform: uppercase; letter-spacing: .06em; }
 .cipher-text { display: block; overflow-wrap: anywhere; color: #102d3b; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: clamp(1.1rem, 2.5vw, 1.65rem); font-weight: 800; line-height: 1.5; letter-spacing: .08em; }
 .decoded-text { color: #075c55; }
+.word-progress { margin: .65rem 0 0; color: #526d78; font-weight: 800; }
+.recovered-text { color: #315563; font-size: clamp(.95rem, 2vw, 1.2rem); }
 .shift-controls { display: flex; justify-content: center; align-items: stretch; gap: 1rem; }
 .shift-controls button { width: 72px; min-height: 72px; color: white; border: 0; border-radius: 14px; background: #173d52; font-size: 2rem; font-weight: 850; }
 .shift-controls button:disabled { cursor: default; opacity: .55; }

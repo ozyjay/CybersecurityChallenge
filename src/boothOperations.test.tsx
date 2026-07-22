@@ -100,7 +100,7 @@ describe("optional timer", () => {
     await act(async () => vi.advanceTimersByTime(1000));
     expect(screen.getByRole("heading", { name: /time’s up — keep going/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next shift/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /lock in decryption/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /lock in word/i })).toBeEnabled();
   });
 });
 

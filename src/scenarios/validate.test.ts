@@ -15,6 +15,7 @@ describe("scenario validation", () => {
   it("rejects invalid and inconsistent cipher content", () => {
     expect(validateScenario({ ...cipher, content: { ...cipher.content, shift: 26 } })).toContain("Cipher shift must be an integer from 1 to 25.");
     expect(validateScenario({ ...cipher, content: { ...cipher.content, plaintext: "A DIFFERENT MESSAGE" } })).toContain("Ciphertext, plaintext, and shift do not match.");
+    expect(validateScenario({ ...cipher, content: { ...cipher.content, plaintext: cipher.content.plaintext.replaceAll(" ", "") } })).toContain("Ciphertext and plaintext must contain the same number of words.");
     expect(validateScenario({ ...cipher, content: { ...cipher.content, hints: ["Only one hint"] } })).toContain("Cipher content requires exactly two non-empty hints.");
   });
 

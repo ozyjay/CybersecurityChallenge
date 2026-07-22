@@ -9,6 +9,7 @@ type Props = {
   scenario: Scenario;
   selectedClueIds: string[];
   cipherShift: number;
+  cipherWordIndex: number;
   interactive: boolean;
   onToggle: (clueId: string) => void;
   onCipherShiftChange: (shift: number) => void;
@@ -17,7 +18,7 @@ type Props = {
 export function ScenarioDisplay(props: Props) {
   const { scenario, selectedClueIds, interactive, onToggle } = props;
   if (scenario.activity === "cipher") {
-    return <CipherScenario scenario={scenario} shift={props.cipherShift} interactive={interactive} onShiftChange={props.onCipherShiftChange} />;
+    return <CipherScenario scenario={scenario} shift={props.cipherShift} wordIndex={props.cipherWordIndex} interactive={interactive} onShiftChange={props.onCipherShiftChange} />;
   }
   const investigationProps = { scenario, selectedClueIds, interactive, onToggle };
   switch (scenario.content.kind) {

@@ -28,7 +28,9 @@ initial state.
 
 Investigation cases follow `ATTRACT → INTRO → SCENARIO → DECISION → REVEAL → RESULT`.
 Cipher cases follow `ATTRACT → INTRO → SCENARIO → REVEAL → RESULT` and retain
-their shift, hint count, and incorrect attempts only in volatile game state.
+their shift, current word, hint count, and incorrect attempts only in volatile
+game state. Solving a word advances through the authored message without
+resetting the shift, demonstrating the weakness of a repeated Caesar key.
 `BEGIN` records the selected variant identifier. From the result screen,
 `NEXT_CASE` records that completed variant, increments the in-memory round seed,
 and returns to `INTRO`. The next deck excludes only that exact variant, leaving

@@ -22,7 +22,7 @@ describe("game state", () => {
   });
 
   it.each(["ATTRACT", "INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ ...initialGameState, screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", cipherShift: 9, cipherHintsUsed: 2, cipherIncorrectAttempts: 3 }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+    expect(gameReducer({ ...initialGameState, screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", cipherShift: 9, cipherWordIndex: 4, cipherHintsUsed: 2, cipherIncorrectAttempts: 3, cipherAttemptIncorrect: true }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
   });
 
   it("tracks cipher shifts, hints, attempts, and successful submission", () => {
@@ -33,9 +33,11 @@ describe("game state", () => {
     state = gameReducer(state, { type: "SHOW_CIPHER_HINT" });
     state = gameReducer(state, { type: "SHOW_CIPHER_HINT" });
     expect(state.cipherHintsUsed).toBe(2);
-    state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: false });
-    expect(state).toMatchObject({ screen: "SCENARIO", cipherIncorrectAttempts: 1 });
-    expect(gameReducer(state, { type: "SUBMIT_CIPHER", correct: true }).screen).toBe("REVEAL");
+    state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: false, lastWord: false });
+    expect(state).toMatchObject({ screen: "SCENARIO", cipherIncorrectAttempts: 1, cipherAttemptIncorrect: true });
+    state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: false });
+    expect(state).toMatchObject({ screen: "SCENARIO", cipherWordIndex: 1, cipherAttemptIncorrect: false });
+    expect(gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: true }).screen).toBe("REVEAL");
   });
 
   it("excludes only the completed variant when continuing", () => {

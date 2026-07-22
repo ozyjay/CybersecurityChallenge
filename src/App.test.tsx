@@ -71,15 +71,17 @@ describe("visitor journeys", () => {
     await openCaseList(user);
     await user.click(screen.getByRole("button", { name: new RegExp(scenario.title, "i") }));
 
-    await user.click(screen.getByRole("button", { name: /lock in decryption/i }));
+    await user.click(screen.getByRole("button", { name: /lock in word/i }));
     expect(screen.getByText(/not readable yet/i)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /show hint 1/i }));
     expect(screen.getByText(scenario.content.hints[0])).toBeInTheDocument();
     for (let step = 0; step < scenario.content.shift; step += 1) {
       await user.click(screen.getByRole("button", { name: /next shift/i }));
     }
-    expect(screen.getByText(scenario.content.plaintext)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /lock in decryption/i }));
+    expect(screen.getByText(scenario.content.plaintext.split(" ")[0], { selector: ".decoded-text" })).toBeInTheDocument();
+    for (const _word of scenario.content.plaintext.split(" ")) {
+      await user.click(screen.getByRole("button", { name: /lock in word/i }));
+    }
     expect(screen.getByRole("heading", { name: /message decoded/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /see my result/i }));
     expect(screen.getByText(/out of 100 points/i)).toBeInTheDocument();

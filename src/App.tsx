@@ -179,6 +179,7 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
                 scenario={scenario}
                 selectedClueIds={state.selectedClueIds}
                 cipherShift={state.cipherShift}
+                cipherWordIndex={state.cipherWordIndex}
                 interactive={state.screen === "SCENARIO" && !state.isReplay}
                 onToggle={(clueId) => dispatch({ type: "TOGGLE_CLUE", clueId })}
                 onCipherShiftChange={(shift) => dispatch({ type: "SET_CIPHER_SHIFT", shift })}
@@ -187,11 +188,15 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
                 {state.isReplay ? <><h2>Prepared demonstration</h2><p>This reviewed example is progressing automatically. Tap or press any key to return to the attract screen.</p></> : state.screen === "SCENARIO" ? <>
                   {scenario.activity === "cipher" ? <>
                     <h2>{countdown.expired ? "Time’s up — keep going" : "Find the readable message"}</h2>
-                    <p>Adjust the shift, then lock in your decryption. You can keep trying if it is not quite right.</p>
+                    <p>Adjust the shift, then lock in each word. The same shift carries forward so you can see why this cipher is easy to break.</p>
                     {state.cipherHintsUsed > 0 && <ol className="hint-list" aria-label="Cipher hints">{scenario.content.hints.slice(0, state.cipherHintsUsed).map((hint) => <li key={hint}>{hint}</li>)}</ol>}
-                    {state.cipherIncorrectAttempts > 0 && <p className="attempt-status" role="status">Not readable yet — adjust the shift and try again.</p>}
+                    {state.cipherAttemptIncorrect && <p className="attempt-status" role="status">That word is not readable yet — adjust the shift and try again.</p>}
                     {state.cipherHintsUsed < 2 && <button className="quiet-button" type="button" onClick={() => dispatch({ type: "SHOW_CIPHER_HINT" })}>Show hint {state.cipherHintsUsed + 1}</button>}
-                    <button className="primary-button" type="button" onClick={() => dispatch({ type: "SUBMIT_CIPHER", correct: state.cipherShift === scenario.content.shift })}>Lock in decryption</button>
+                    <button className="primary-button" type="button" onClick={() => dispatch({
+                      type: "SUBMIT_CIPHER",
+                      correct: state.cipherShift === scenario.content.shift,
+                      lastWord: state.cipherWordIndex === scenario.content.plaintext.split(" ").length - 1
+                    })}>Lock in word</button>
                     <button className="text-button" type="button" onClick={() => dispatch({ type: "RETURN_TO_CASES" })}>Choose another case</button>
                   </> : <>
                     <h2>Ready to decide?</h2>

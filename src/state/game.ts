@@ -10,8 +10,10 @@ export type GameState = {
   selectedClueIds: string[];
   decision: Decision | null;
   cipherShift: number;
+  cipherWordIndex: number;
   cipherHintsUsed: number;
   cipherIncorrectAttempts: number;
+  cipherAttemptIncorrect: boolean;
   isReplay: boolean;
 };
 
@@ -26,7 +28,7 @@ export type GameAction =
   | { type: "DECIDE"; decision: Decision }
   | { type: "SET_CIPHER_SHIFT"; shift: number }
   | { type: "SHOW_CIPHER_HINT" }
-  | { type: "SUBMIT_CIPHER"; correct: boolean }
+  | { type: "SUBMIT_CIPHER"; correct: boolean; lastWord: boolean }
   | { type: "SET_REPLAY_CIPHER"; shift: number }
   | { type: "SHOW_RESULT" }
   | { type: "NEXT_CASE" }
@@ -43,8 +45,10 @@ export const initialGameState: GameState = {
   selectedClueIds: [],
   decision: null,
   cipherShift: 0,
+  cipherWordIndex: 0,
   cipherHintsUsed: 0,
   cipherIncorrectAttempts: 0,
+  cipherAttemptIncorrect: false,
   isReplay: false
 };
 
@@ -82,15 +86,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return state.screen === "DECISION" ? { ...state, decision: action.decision, screen: "REVEAL" } : state;
     case "SET_CIPHER_SHIFT":
       return state.screen === "SCENARIO" && Number.isInteger(action.shift)
-        ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26 }
+        ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26, cipherAttemptIncorrect: false }
         : state;
     case "SHOW_CIPHER_HINT":
       return state.screen === "SCENARIO" ? { ...state, cipherHintsUsed: Math.min(2, state.cipherHintsUsed + 1) } : state;
     case "SUBMIT_CIPHER":
       if (state.screen !== "SCENARIO") return state;
       return action.correct
-        ? { ...state, screen: "REVEAL" }
-        : { ...state, cipherIncorrectAttempts: state.cipherIncorrectAttempts + 1 };
+        ? action.lastWord
+          ? { ...state, screen: "REVEAL" }
+          : { ...state, cipherWordIndex: state.cipherWordIndex + 1, cipherAttemptIncorrect: false }
+        : { ...state, cipherIncorrectAttempts: state.cipherIncorrectAttempts + 1, cipherAttemptIncorrect: true };
     case "SET_REPLAY_CIPHER":
       return state.screen === "SCENARIO" && state.isReplay
         ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26, screen: "REVEAL" }

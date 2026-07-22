@@ -81,6 +81,9 @@ export function validateScenario(value: unknown): string[] {
         if (decodeCaesar(value.content.ciphertext, Number(value.content.shift)) !== value.content.plaintext) {
           errors.push("Ciphertext, plaintext, and shift do not match.");
         }
+        if (value.content.ciphertext.split(" ").length !== value.content.plaintext.split(" ").length) {
+          errors.push("Ciphertext and plaintext must contain the same number of words.");
+        }
       }
     }
   } else {
