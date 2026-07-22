@@ -1,4 +1,4 @@
-export type ScenarioCategory = "email" | "sms" | "qr" | "login" | "permissions";
+export type ScenarioCategory = "email" | "sms" | "qr" | "login" | "permissions" | "cipher";
 export type Difficulty = "starter" | "intermediate";
 export type Decision = "safe" | "suspicious" | "escalate";
 export type Severity = "low" | "medium" | "high";
@@ -64,9 +64,20 @@ export type LoginContent = {
   supportText: string;
 };
 
-export type ScenarioContent = EmailContent | MessageContent | QrPosterContent | LoginContent;
+export type InvestigationContent = EmailContent | MessageContent | QrPosterContent | LoginContent;
 
-export type Scenario = {
+export type CipherContent = {
+  kind: "cipher";
+  ciphertext: string;
+  plaintext: string;
+  shift: number;
+  hints: [string, string];
+  revealExplanation: string;
+};
+
+export type ScenarioContent = InvestigationContent | CipherContent;
+
+type ScenarioBase = {
   id: string;
   familyId: string;
   variantId: string;
@@ -74,24 +85,50 @@ export type Scenario = {
   category: ScenarioCategory;
   difficulty: Difficulty;
   introduction: string;
-  content: ScenarioContent;
-  clues: Clue[];
-  decoys: Decoy[];
-  correctDecision: Decision;
   takeaway: string;
   careerConnection: string;
 };
 
-export type ScenarioVariant = {
+export type InvestigationScenario = ScenarioBase & {
+  activity: "investigation";
+  content: InvestigationContent;
+  clues: Clue[];
+  decoys: Decoy[];
+  correctDecision: Decision;
+};
+
+export type CipherScenario = ScenarioBase & {
+  activity: "cipher";
+  category: "cipher";
+  content: CipherContent;
+};
+
+export type Scenario = InvestigationScenario | CipherScenario;
+
+export type InvestigationScenarioVariant = {
   id: string;
-  content: ScenarioContent;
+  content: InvestigationContent;
   clues?: Clue[];
   decoys?: Decoy[];
   takeaway?: string;
   careerConnection?: string;
 };
 
-export type ScenarioFamily = Omit<Scenario, "id" | "familyId" | "variantId"> & {
+export type CipherScenarioVariant = {
   id: string;
-  variants: ScenarioVariant[];
+  content: CipherContent;
+  takeaway?: string;
+  careerConnection?: string;
 };
+
+export type InvestigationScenarioFamily = Omit<InvestigationScenario, "id" | "familyId" | "variantId"> & {
+  id: string;
+  variants: InvestigationScenarioVariant[];
+};
+
+export type CipherScenarioFamily = Omit<CipherScenario, "id" | "familyId" | "variantId"> & {
+  id: string;
+  variants: CipherScenarioVariant[];
+};
+
+export type ScenarioFamily = InvestigationScenarioFamily | CipherScenarioFamily;

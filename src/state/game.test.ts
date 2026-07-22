@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { scenarios } from "../scenarios";
-import { gameReducer, initialGameState, scoreGame } from "./game";
+import { gameReducer, initialGameState, scoreCipher, scoreGame } from "./game";
+import type { InvestigationScenario } from "../types/scenario";
 
-const accountWarning = scenarios.find((scenario) => scenario.familyId === "urgent-account-warning")!;
+const accountWarning = scenarios.find((scenario): scenario is InvestigationScenario => scenario.activity === "investigation" && scenario.familyId === "urgent-account-warning")!;
 
 describe("game state", () => {
   it("runs the main state transitions", () => {
@@ -21,7 +22,20 @@ describe("game state", () => {
   });
 
   it.each(["ATTRACT", "INTRO", "SCENARIO", "DECISION", "REVEAL", "RESULT"] as const)("resets cleanly from %s", (screen) => {
-    expect(gameReducer({ screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", isReplay: false }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+    expect(gameReducer({ ...initialGameState, screen, round: 3, lastCompletedScenarioId: "previous:variant", scenarioId: accountWarning.id, selectedClueIds: ["sender-mismatch"], decision: "safe", cipherShift: 9, cipherHintsUsed: 2, cipherIncorrectAttempts: 3 }, { type: "RESET" })).toEqual({ ...initialGameState, round: 4 });
+  });
+
+  it("tracks cipher shifts, hints, attempts, and successful submission", () => {
+    let state = gameReducer(initialGameState, { type: "START_SCENARIO", scenarioId: "secret-caesar-cipher:original" });
+    state = gameReducer(state, { type: "SET_CIPHER_SHIFT", shift: -1 });
+    expect(state.cipherShift).toBe(25);
+    state = gameReducer(state, { type: "SHOW_CIPHER_HINT" });
+    state = gameReducer(state, { type: "SHOW_CIPHER_HINT" });
+    state = gameReducer(state, { type: "SHOW_CIPHER_HINT" });
+    expect(state.cipherHintsUsed).toBe(2);
+    state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: false });
+    expect(state).toMatchObject({ screen: "SCENARIO", cipherIncorrectAttempts: 1 });
+    expect(gameReducer(state, { type: "SUBMIT_CIPHER", correct: true }).screen).toBe("REVEAL");
   });
 
   it("excludes only the completed variant when continuing", () => {
@@ -64,8 +78,14 @@ describe("scoring", () => {
   });
 
   it("rewards recognising the safe comparison without requiring warning signs", () => {
-    const safeScenario = scenarios.find((scenario) => scenario.correctDecision === "safe")!;
+    const safeScenario = scenarios.find((scenario): scenario is InvestigationScenario => scenario.activity === "investigation" && scenario.correctDecision === "safe")!;
     expect(scoreGame(safeScenario, [], "safe")).toMatchObject({ correctClues: 0, missedClues: 0, falsePositives: 0, points: 20, maximum: 20 });
     expect(scoreGame(safeScenario, [safeScenario.decoys[0].id], "safe").points).toBe(18);
+  });
+
+  it("scores cipher hints and incorrect attempts gently", () => {
+    expect(scoreCipher(0, 0)).toMatchObject({ points: 100, maximum: 100 });
+    expect(scoreCipher(2, 3).points).toBe(65);
+    expect(scoreCipher(2, 30).points).toBe(0);
   });
 });

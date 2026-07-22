@@ -14,7 +14,8 @@
 
 The scenario validator checks every materialised variant and rejects executable
 or form markup, active destination fields, malformed evidence, and non-allowlisted
-domains. Source validation scans all five family files. Tests also guard against
+domains. It also verifies each cipher shift and its authored plaintext. Source
+validation scans all six family files. Tests also guard against
 credential and personal-data input markup. Validation is defence in depth; every
 content change still requires human review.
 

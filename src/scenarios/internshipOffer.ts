@@ -2,6 +2,7 @@ import type { ScenarioFamily } from "../types/scenario";
 
 export const internshipOffer = {
   id: "instant-internship-offer",
+  activity: "investigation",
   title: "Instant remote internship",
   category: "sms",
   difficulty: "intermediate",

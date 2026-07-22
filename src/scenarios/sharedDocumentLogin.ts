@@ -2,6 +2,7 @@ import type { ScenarioFamily } from "../types/scenario";
 
 export const sharedDocumentLogin = {
   id: "shared-document-login",
+  activity: "investigation",
   title: "Shared document sign-in",
   category: "login",
   difficulty: "intermediate",

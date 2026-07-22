@@ -19,3 +19,14 @@ staff operation, OpenDayOps acceptance, or the event readiness decision.
 Environment notes: Playwright installed its supported Chromium fallback build for
 the local Linux environment. Automated browser serving used isolated development
 port `4174`; this is not an event port allocation.
+
+## Caesar cipher addition — 22 July 2026
+
+- Scenario validation: passed, six scenario files and twelve materialised variants
+- Unit and component tests: passed, 84 tests
+- Production build: passed
+- Chromium production-browser journeys: passed, ten tests and one expected
+  burn-in skip, including the local cipher journey and runtime-network guard
+- Required 60-minute burn-in: not repeated for this change
+- Independent operator runbook rehearsal: pending
+- OpenDayOps event port and presentation rotation: pending

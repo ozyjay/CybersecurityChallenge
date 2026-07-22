@@ -6,9 +6,10 @@ response, and receive concise educational feedback.
 
 ## Status
 
-MVP 0.5 includes five curated fictional scenario families with ten reviewed
+The current build includes six curated fictional scenario families with twelve reviewed
 variants: an urgent account email, campus Wi-Fi poster, internship direct
-message, shared-document sign-in page, and a genuinely safe notification. Each
+message, shared-document sign-in page, a genuinely safe notification, and a
+local Caesar cipher puzzle. Each
 round selects one local variant per family and shuffles the case order. Every case
 supports clue selection, false-positive explanations, a safety decision, evidence
 reveal, educational scoring, and a clean one-action reset. Booth operation now
@@ -61,8 +62,10 @@ An event port must be recorded in the OpenDayOps registry and decisions log.
 
 ## Visitor and staff operation
 
-Select **Tap to begin**, choose one of five cases, flag suspicious regions, make a decision, review the
-evidence, and view the result. **Reset for next visitor** or **Choose the next
+Select **Tap to begin** and choose one of six cases. Investigation cases ask you
+to flag suspicious regions and make a safety decision; the cipher case asks you
+to rotate an alphabet shift and decode a prepared message. Review the reveal and
+view the result. **Reset for next visitor** or **Choose the next
 case** returns directly to the case list and clears the current score and choices.
 After a completed case, its exact variant is withheld from the next deck; the
 same scenario family remains available through its reviewed alternative. **Reset

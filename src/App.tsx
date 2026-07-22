@@ -5,7 +5,7 @@ import { useCountdown } from "./hooks/useCountdown";
 import { usePreparedReplay } from "./hooks/usePreparedReplay";
 import { buildScenarioDeck } from "./scenarios";
 import { createRandomSeed } from "./scenarios/randomise";
-import { gameReducer, initialGameState, resultLabel, scoreGame } from "./state/game";
+import { gameReducer, initialGameState, resultLabel, scoreCipher, scoreGame } from "./state/game";
 import type { Decision, ScenarioCategory } from "./types/scenario";
 
 const decisionLabels: Record<Decision, string> = {
@@ -19,7 +19,8 @@ const categoryLabels: Record<ScenarioCategory, string> = {
   sms: "Direct message",
   qr: "QR poster",
   login: "Sign-in page",
-  permissions: "Permission request"
+  permissions: "Permission request",
+  cipher: "Cipher puzzle"
 };
 
 const defaultStaffSettings: StaffSettings = {
@@ -69,13 +70,17 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
     ? deck
     : deck.filter((candidate) => candidate.difficulty === staffSettings.difficulty);
   const scenario = state.scenarioId ? deck.find((candidate) => candidate.id === state.scenarioId) : undefined;
-  const score = scenario ? scoreGame(scenario, state.selectedClueIds, state.decision) : null;
+  const score = scenario
+    ? scenario.activity === "cipher"
+      ? scoreCipher(state.cipherHintsUsed, state.cipherIncorrectAttempts)
+      : scoreGame(scenario, state.selectedClueIds, state.decision)
+    : null;
   const replay = usePreparedReplay({ state, deck, dispatch, loop: staffSettings.replayLoop, stepMilliseconds: replayStepMilliseconds });
 
   const handleTimerExpiry = useCallback(() => {
     void playSoundCue(staffSettings.soundEnabled);
-    dispatch({ type: "OPEN_DECISION" });
-  }, [staffSettings.soundEnabled]);
+    if (scenario?.activity !== "cipher") dispatch({ type: "OPEN_DECISION" });
+  }, [scenario?.activity, staffSettings.soundEnabled]);
   const countdown = useCountdown({
     active: state.screen === "SCENARIO" && staffSettings.timerEnabled && !state.isReplay,
     durationSeconds: staffSettings.relaxedMode ? timerSeconds * 2 : timerSeconds,
@@ -142,7 +147,7 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
           <section className="intro scenario-intro" aria-labelledby="intro-title">
             <span className="eyebrow">Choose your investigation</span>
             <h1 id="intro-title">Which case will you inspect?</h1>
-            <p className="lead">Select anything suspicious, then decide on the safest response.</p>
+            <p className="lead">Investigate a suspicious artefact or decode a prepared cipher puzzle.</p>
             <div className="scenario-picker" aria-label="Choose a scenario">
               {visibleDeck.map((option, index) => (
                 <button className="scenario-choice" type="button" key={option.id} data-scenario-id={option.id} onClick={() => dispatch({ type: "BEGIN", scenarioId: option.id })}>
@@ -164,21 +169,35 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
               <div className="session-indicators">
                 {countdown.remainingSeconds !== null && <div className={`timer ${countdown.remainingSeconds <= 10 ? "timer-warning" : ""}`} role="timer" aria-label={`${countdown.remainingSeconds} seconds remaining`}><strong>{countdown.remainingSeconds}</strong><span>seconds</span></div>}
                 {!staffSettings.timerEnabled && !state.isReplay && <div className="mode-badge">Timer off</div>}
-                <div className="clue-counter" aria-live="polite"><strong>{state.selectedClueIds.length}</strong><span>clues flagged</span></div>
+                {scenario.activity === "cipher"
+                  ? <div className="clue-counter" aria-live="polite"><strong>{state.cipherHintsUsed}</strong><span>hints used</span></div>
+                  : <div className="clue-counter" aria-live="polite"><strong>{state.selectedClueIds.length}</strong><span>clues flagged</span></div>}
               </div>
             </div>
             <div className="game-layout">
               <ScenarioDisplay
                 scenario={scenario}
                 selectedClueIds={state.selectedClueIds}
+                cipherShift={state.cipherShift}
                 interactive={state.screen === "SCENARIO" && !state.isReplay}
                 onToggle={(clueId) => dispatch({ type: "TOGGLE_CLUE", clueId })}
+                onCipherShiftChange={(shift) => dispatch({ type: "SET_CIPHER_SHIFT", shift })}
               />
-              <aside className="action-panel" aria-label="Investigation controls">
+              <aside className="action-panel" aria-label={scenario.activity === "cipher" ? "Cipher controls" : "Investigation controls"}>
                 {state.isReplay ? <><h2>Prepared demonstration</h2><p>This reviewed example is progressing automatically. Tap or press any key to return to the attract screen.</p></> : state.screen === "SCENARIO" ? <>
-                  <h2>Ready to decide?</h2>
-                  <p>Flag anything suspicious, then make your safety decision.</p>
-                  <button className="primary-button" type="button" onClick={() => dispatch({ type: "OPEN_DECISION" })}>Make my decision</button>
+                  {scenario.activity === "cipher" ? <>
+                    <h2>{countdown.expired ? "Time’s up — keep going" : "Find the readable message"}</h2>
+                    <p>Adjust the shift, then lock in your decryption. You can keep trying if it is not quite right.</p>
+                    {state.cipherHintsUsed > 0 && <ol className="hint-list" aria-label="Cipher hints">{scenario.content.hints.slice(0, state.cipherHintsUsed).map((hint) => <li key={hint}>{hint}</li>)}</ol>}
+                    {state.cipherIncorrectAttempts > 0 && <p className="attempt-status" role="status">Not readable yet — adjust the shift and try again.</p>}
+                    {state.cipherHintsUsed < 2 && <button className="quiet-button" type="button" onClick={() => dispatch({ type: "SHOW_CIPHER_HINT" })}>Show hint {state.cipherHintsUsed + 1}</button>}
+                    <button className="primary-button" type="button" onClick={() => dispatch({ type: "SUBMIT_CIPHER", correct: state.cipherShift === scenario.content.shift })}>Lock in decryption</button>
+                    <button className="text-button" type="button" onClick={() => dispatch({ type: "RETURN_TO_CASES" })}>Choose another case</button>
+                  </> : <>
+                    <h2>Ready to decide?</h2>
+                    <p>Flag anything suspicious, then make your safety decision.</p>
+                    <button className="primary-button" type="button" onClick={() => dispatch({ type: "OPEN_DECISION" })}>Make my decision</button>
+                  </>}
                 </> : <>
                   <h2>{countdown.expired ? "Time’s up — what should you do?" : "What should you do?"}</h2>
                   <p>Choose the safest response to this situation.</p>
@@ -196,31 +215,36 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
 
         {scenario && state.screen === "REVEAL" && (
           <section className="reveal" aria-labelledby="reveal-title">
-            <span className="eyebrow">{state.isReplay ? "Prepared demonstration · Evidence reveal" : "Evidence reveal"}</span>
-            <h1 id="reveal-title">Here’s what the scenario was hiding</h1>
-            <p className="lead">The response was <strong>{state.decision ? decisionLabels[state.decision] : "not selected"}</strong>. The recommended response is <strong>{decisionLabels[scenario.correctDecision]}</strong>.</p>
-            <div className="evidence-grid">
-              {scenario.clues.length === 0 && (
-                <article className="evidence-card safe-evidence"><span className="status found">✓ Prepared safe example</span><h2>No designed warning signs</h2><p>This message has an expected context, asks for no credentials or payment, and recommends independent navigation.</p></article>
-              )}
-              {scenario.clues.map((clue) => {
-                const found = state.selectedClueIds.includes(clue.id);
-                return <article className="evidence-card" key={clue.id}><span className={`status ${found ? "found" : "missed"}`}>{found ? "✓ Identified" : "○ Worth noticing"}</span><h2>{clue.label}</h2><p>{clue.explanation}</p><small>Impact: {clue.severity}</small></article>;
-              })}
-              {scenario.decoys.filter((decoy) => state.selectedClueIds.includes(decoy.id)).map((decoy) => (
-                <article className="evidence-card false-positive" key={decoy.id}><span className="status review">△ False positive</span><h2>{decoy.label}</h2><p>{decoy.explanation}</p><small>Useful caution, but not a warning sign here</small></article>
-              ))}
-            </div>
+            <span className="eyebrow">{state.isReplay ? "Prepared demonstration · Reveal" : scenario.activity === "cipher" ? "Cipher revealed" : "Evidence reveal"}</span>
+            <h1 id="reveal-title">{scenario.activity === "cipher" ? "Message decoded" : "Here’s what the scenario was hiding"}</h1>
+            {scenario.activity === "cipher" ? <>
+              <p className="lead"><strong>{scenario.content.plaintext}</strong></p>
+              <div className="evidence-grid"><article className="evidence-card safe-evidence"><span className="status found">✓ Shift {scenario.content.shift}</span><h2>Why this cipher is weak</h2><p>{scenario.content.revealExplanation}</p></article></div>
+            </> : <>
+              <p className="lead">The response was <strong>{state.decision ? decisionLabels[state.decision] : "not selected"}</strong>. The recommended response is <strong>{decisionLabels[scenario.correctDecision]}</strong>.</p>
+              <div className="evidence-grid">
+                {scenario.clues.length === 0 && <article className="evidence-card safe-evidence"><span className="status found">✓ Prepared safe example</span><h2>No designed warning signs</h2><p>This message has an expected context, asks for no credentials or payment, and recommends independent navigation.</p></article>}
+                {scenario.clues.map((clue) => {
+                  const found = state.selectedClueIds.includes(clue.id);
+                  return <article className="evidence-card" key={clue.id}><span className={`status ${found ? "found" : "missed"}`}>{found ? "✓ Identified" : "○ Worth noticing"}</span><h2>{clue.label}</h2><p>{clue.explanation}</p><small>Impact: {clue.severity}</small></article>;
+                })}
+                {scenario.decoys.filter((decoy) => state.selectedClueIds.includes(decoy.id)).map((decoy) => <article className="evidence-card false-positive" key={decoy.id}><span className="status review">△ False positive</span><h2>{decoy.label}</h2><p>{decoy.explanation}</p><small>Useful caution, but not a warning sign here</small></article>)}
+              </div>
+            </>}
             {!state.isReplay && <button className="primary-button centred" type="button" onClick={() => dispatch({ type: "SHOW_RESULT" })}>See my result</button>}
           </section>
         )}
 
         {scenario && score && state.screen === "RESULT" && (
           <section className="result panel" aria-labelledby="result-title">
-            <span className="eyebrow">{state.isReplay ? "Prepared demonstration complete" : `Investigation complete · ${scenario.title}`}</span>
+            <span className="eyebrow">{state.isReplay ? "Prepared demonstration complete" : `${scenario.activity === "cipher" ? "Cipher complete" : "Investigation complete"} · ${scenario.title}`}</span>
             <h1 id="result-title">{resultLabel(score.points, score.maximum)}</h1>
             <p className="score"><strong>{score.points}</strong><span>out of {score.maximum} points</span></p>
-            <p>{state.isReplay ? "This is a prepared example using reviewed clues." : `You identified ${score.correctClues} of ${scenario.clues.length} warning signs, marked ${score.falsePositives} benign ${score.falsePositives === 1 ? "detail" : "details"}, and your final decision was ${score.decisionCorrect ? "a strong defensive choice" : "a chance to practise checking before acting"}.`}</p>
+            <p>{state.isReplay
+              ? "This is a prepared example using reviewed local content."
+              : scenario.activity === "cipher"
+                ? `You decoded the message using ${state.cipherHintsUsed} ${state.cipherHintsUsed === 1 ? "hint" : "hints"} and made ${state.cipherIncorrectAttempts} incorrect ${state.cipherIncorrectAttempts === 1 ? "lock-in" : "lock-ins"}.`
+                : `You identified ${score.correctClues} of ${scenario.clues.length} warning signs, marked ${score.falsePositives} benign ${score.falsePositives === 1 ? "detail" : "details"}, and your final decision was ${score.decisionCorrect ? "a strong defensive choice" : "a chance to practise checking before acting"}.`}</p>
             <div className="learning-box"><h2>Take this with you</h2><p>{scenario.takeaway}</p></div>
             <div className="career-box"><h2>A cybersecurity career connection</h2><p>{scenario.careerConnection}</p></div>
             {!state.isReplay && <><p className="perspective">A score is just one practice round—not a guarantee about real-world safety.</p><div className="result-actions"><button className="primary-button" type="button" onClick={() => dispatch({ type: "NEXT_CASE" })}>Choose the next case</button><button className="quiet-button" type="button" onClick={() => dispatch({ type: "RESET" })}>Reset for next visitor</button></div></>}

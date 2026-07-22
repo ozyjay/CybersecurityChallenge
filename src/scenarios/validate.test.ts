@@ -1,13 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { scenarios } from "./index";
 import { assertValidScenario, validateScenario, validateScenarios } from "./validate";
+import type { CipherScenario, InvestigationScenario } from "../types/scenario";
 
 describe("scenario validation", () => {
-  const accountWarning = scenarios.find((scenario) => scenario.familyId === "urgent-account-warning")!;
+  const accountWarning = scenarios.find((scenario): scenario is InvestigationScenario => scenario.activity === "investigation" && scenario.familyId === "urgent-account-warning")!;
+  const cipher = scenarios.find((scenario): scenario is CipherScenario => scenario.activity === "cipher")!;
 
   it("accepts every curated variant", () => {
-    expect(scenarios).toHaveLength(10);
+    expect(scenarios).toHaveLength(12);
     expect(validateScenarios(scenarios)).toEqual([]);
+  });
+
+  it("rejects invalid and inconsistent cipher content", () => {
+    expect(validateScenario({ ...cipher, content: { ...cipher.content, shift: 26 } })).toContain("Cipher shift must be an integer from 1 to 25.");
+    expect(validateScenario({ ...cipher, content: { ...cipher.content, plaintext: "A DIFFERENT MESSAGE" } })).toContain("Ciphertext, plaintext, and shift do not match.");
+    expect(validateScenario({ ...cipher, content: { ...cipher.content, hints: ["Only one hint"] } })).toContain("Cipher content requires exactly two non-empty hints.");
   });
 
   it("rejects unsafe domains and executable markup", () => {

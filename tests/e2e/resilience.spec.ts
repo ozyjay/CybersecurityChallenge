@@ -21,12 +21,12 @@ test("compact touch viewport keeps primary controls available", async ({ page })
   await page.goto("/?seed=42");
   await page.getByRole("button", { name: /tap to begin/i }).click();
   const choices = page.getByRole("button", { name: /play this case/i });
-  await expect(choices).toHaveCount(5);
+  await expect(choices).toHaveCount(6);
   const box = await choices.first().boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x).toBeGreaterThanOrEqual(0);
   expect(box!.x + box!.width).toBeLessThanOrEqual(375);
-  await choices.first().tap();
+  await page.getByRole("button", { name: /urgent account warning/i }).tap();
   await expect(page.getByRole("button", { name: /make my decision/i })).toBeVisible();
   runtime.assertClean();
 });

@@ -52,15 +52,20 @@ export function usePreparedReplay({ state, deck, dispatch, loop, stepMillisecond
     const timer = window.setTimeout(() => {
       switch (stage) {
         case 0:
-          dispatch({ type: "SET_REPLAY_CLUES", clueIds: scenario!.clues.slice(0, 3).map((clue) => clue.id) });
-          setStage(1);
+          if (scenario!.activity === "cipher") {
+            dispatch({ type: "SET_REPLAY_CIPHER", shift: scenario!.content.shift });
+            setStage(3);
+          } else {
+            dispatch({ type: "SET_REPLAY_CLUES", clueIds: scenario!.clues.slice(0, 3).map((clue) => clue.id) });
+            setStage(1);
+          }
           break;
         case 1:
           dispatch({ type: "OPEN_DECISION" });
           setStage(2);
           break;
         case 2:
-          dispatch({ type: "DECIDE", decision: scenario!.correctDecision });
+          if (scenario!.activity === "investigation") dispatch({ type: "DECIDE", decision: scenario!.correctDecision });
           setStage(3);
           break;
         case 3:
@@ -68,7 +73,7 @@ export function usePreparedReplay({ state, deck, dispatch, loop, stepMillisecond
           setStage(4);
           break;
         case 4:
-          dispatch({ type: "RETURN_TO_ATTRACT" });
+          dispatch({ type: "REPLAY_TO_ATTRACT" });
           setStage(5);
           break;
         default:

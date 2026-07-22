@@ -2,6 +2,7 @@ import type { ScenarioFamily } from "../types/scenario";
 
 export const expectedNotification = {
   id: "expected-service-notification",
+  activity: "investigation",
   title: "Expected service notification",
   category: "email",
   difficulty: "intermediate",

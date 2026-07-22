@@ -32,7 +32,7 @@ describe("staff controls", () => {
     await user.selectOptions(screen.getByLabelText(/difficulty/i), "starter");
     await user.click(screen.getByRole("button", { name: /close staff controls/i }));
     await user.click(screen.getByRole("button", { name: /tap to begin/i }));
-    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(3);
   });
 
   it("starts a selected case and returns to attract mode without terminal commands", async () => {
@@ -90,9 +90,33 @@ describe("optional timer", () => {
     expect(screen.getByRole("button", { name: /tap to begin/i })).toBeInTheDocument();
     expect(screen.queryByRole("timer")).not.toBeInTheDocument();
   });
+
+  it("lets a cipher visitor continue after time expires", async () => {
+    vi.useFakeTimers();
+    render(<App seed={12} timerSeconds={1} />);
+    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    selectReplayScenario(/decode the secret message/i);
+    fireEvent.click(screen.getByRole("button", { name: /start selected case/i }));
+    await act(async () => vi.advanceTimersByTime(1000));
+    expect(screen.getByRole("heading", { name: /time’s up — keep going/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next shift/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /lock in decryption/i })).toBeEnabled();
+  });
 });
 
 describe("prepared replay", () => {
+  it("runs the cipher-specific reveal and result path", async () => {
+    vi.useFakeTimers();
+    render(<App seed={21} replayStepMilliseconds={100} />);
+    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    selectReplayScenario(/decode the secret message/i);
+    fireEvent.click(screen.getByRole("button", { name: /start prepared replay/i }));
+    await advanceReplayStep(100);
+    expect(screen.getByRole("heading", { name: /message decoded/i })).toBeInTheDocument();
+    await advanceReplayStep(100);
+    expect(screen.getByText(/out of 100 points/i)).toBeInTheDocument();
+  });
+
   it("progresses through a deterministic example and loops to another case", async () => {
     vi.useFakeTimers();
     render(<App seed={21} replayStepMilliseconds={100} />);
@@ -107,7 +131,7 @@ describe("prepared replay", () => {
     await advanceReplayStep(100);
     expect(screen.getByRole("heading", { name: /what the scenario was hiding/i })).toBeInTheDocument();
     await advanceReplayStep(100);
-    expect(screen.getByText(/prepared example using reviewed clues/i)).toBeInTheDocument();
+    expect(screen.getByText(/prepared example using reviewed local content/i)).toBeInTheDocument();
     await advanceReplayStep(100);
     expect(screen.getByRole("button", { name: /tap to begin/i })).toBeInTheDocument();
     await advanceReplayStep(100);

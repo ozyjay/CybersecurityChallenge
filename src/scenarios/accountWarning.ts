@@ -2,6 +2,7 @@ import type { ScenarioFamily } from "../types/scenario";
 
 export const accountWarning = {
   id: "urgent-account-warning",
+  activity: "investigation",
   title: "Urgent account warning",
   category: "email",
   difficulty: "starter",

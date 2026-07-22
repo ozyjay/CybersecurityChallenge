@@ -1,7 +1,7 @@
-import type { Scenario } from "../types/scenario";
+import type { InvestigationScenario } from "../types/scenario";
 import { SelectableRegion } from "./SelectableRegion";
 
-type Props = { scenario: Scenario; selectedClueIds: string[]; interactive: boolean; onToggle: (clueId: string) => void };
+type Props = { scenario: InvestigationScenario; selectedClueIds: string[]; interactive: boolean; onToggle: (clueId: string) => void };
 
 export function QrPosterScenario({ scenario, selectedClueIds, interactive, onToggle }: Props) {
   if (scenario.content.kind !== "qr") return null;

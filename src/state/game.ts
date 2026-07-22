@@ -1,4 +1,4 @@
-import type { Decision, Scenario } from "../types/scenario";
+import type { Decision, InvestigationScenario } from "../types/scenario";
 
 export type GameScreen = "ATTRACT" | "INTRO" | "SCENARIO" | "DECISION" | "REVEAL" | "RESULT";
 
@@ -9,6 +9,9 @@ export type GameState = {
   scenarioId: string | null;
   selectedClueIds: string[];
   decision: Decision | null;
+  cipherShift: number;
+  cipherHintsUsed: number;
+  cipherIncorrectAttempts: number;
   isReplay: boolean;
 };
 
@@ -21,10 +24,15 @@ export type GameAction =
   | { type: "TOGGLE_CLUE"; clueId: string }
   | { type: "OPEN_DECISION" }
   | { type: "DECIDE"; decision: Decision }
+  | { type: "SET_CIPHER_SHIFT"; shift: number }
+  | { type: "SHOW_CIPHER_HINT" }
+  | { type: "SUBMIT_CIPHER"; correct: boolean }
+  | { type: "SET_REPLAY_CIPHER"; shift: number }
   | { type: "SHOW_RESULT" }
   | { type: "NEXT_CASE" }
   | { type: "RETURN_TO_CASES" }
   | { type: "RETURN_TO_ATTRACT" }
+  | { type: "REPLAY_TO_ATTRACT" }
   | { type: "RESET" };
 
 export const initialGameState: GameState = {
@@ -34,6 +42,9 @@ export const initialGameState: GameState = {
   scenarioId: null,
   selectedClueIds: [],
   decision: null,
+  cipherShift: 0,
+  cipherHintsUsed: 0,
+  cipherIncorrectAttempts: 0,
   isReplay: false
 };
 
@@ -69,6 +80,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return state.screen === "SCENARIO" ? { ...state, screen: "DECISION" } : state;
     case "DECIDE":
       return state.screen === "DECISION" ? { ...state, decision: action.decision, screen: "REVEAL" } : state;
+    case "SET_CIPHER_SHIFT":
+      return state.screen === "SCENARIO" && Number.isInteger(action.shift)
+        ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26 }
+        : state;
+    case "SHOW_CIPHER_HINT":
+      return state.screen === "SCENARIO" ? { ...state, cipherHintsUsed: Math.min(2, state.cipherHintsUsed + 1) } : state;
+    case "SUBMIT_CIPHER":
+      if (state.screen !== "SCENARIO") return state;
+      return action.correct
+        ? { ...state, screen: "REVEAL" }
+        : { ...state, cipherIncorrectAttempts: state.cipherIncorrectAttempts + 1 };
+    case "SET_REPLAY_CIPHER":
+      return state.screen === "SCENARIO" && state.isReplay
+        ? { ...state, cipherShift: ((action.shift % 26) + 26) % 26, screen: "REVEAL" }
+        : state;
     case "SHOW_RESULT":
       return state.screen === "REVEAL" ? { ...state, screen: "RESULT" } : state;
     case "NEXT_CASE":
@@ -79,6 +105,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...initialGameState, screen: "INTRO", round: state.round + 1, lastCompletedScenarioId: state.lastCompletedScenarioId };
     case "RETURN_TO_ATTRACT":
       return { ...initialGameState, round: state.round + 1 };
+    case "REPLAY_TO_ATTRACT":
+      return state.isReplay ? { ...initialGameState, round: state.round, isReplay: true } : state;
     case "RESET":
       return { ...initialGameState, round: state.round + 1 };
   }
@@ -86,7 +114,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
 export type Score = { correctClues: number; missedClues: number; falsePositives: number; decisionCorrect: boolean; points: number; maximum: number };
 
-export function scoreGame(scenario: Scenario, selectedClueIds: string[], decision: Decision | null): Score {
+export function scoreGame(scenario: InvestigationScenario, selectedClueIds: string[], decision: Decision | null): Score {
   const clueIds = new Set(scenario.clues.map((clue) => clue.id));
   const selections = new Set(selectedClueIds);
   const correctClues = [...selections].filter((id) => clueIds.has(id)).length;
@@ -96,6 +124,11 @@ export function scoreGame(scenario: Scenario, selectedClueIds: string[], decisio
   const maximum = clueIds.size * 10 + 20;
   const points = Math.max(0, correctClues * 10 - falsePositives * 2 + (decisionCorrect ? 20 : 0));
   return { correctClues, missedClues, falsePositives, decisionCorrect, points, maximum };
+}
+
+export function scoreCipher(hintsUsed: number, incorrectAttempts: number): Score {
+  const points = Math.max(0, 100 - Math.min(2, hintsUsed) * 10 - Math.max(0, incorrectAttempts) * 5);
+  return { correctClues: 0, missedClues: 0, falsePositives: 0, decisionCorrect: true, points, maximum: 100 };
 }
 
 export function resultLabel(points: number, maximum: number): string {

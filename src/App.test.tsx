@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import App from "./App";
 import { buildScenarioDeck, scenarios } from "./scenarios";
+import type { CipherScenario, InvestigationScenario } from "./types/scenario";
 
 const decisionButton = {
   safe: /safe$/i,
@@ -22,7 +23,10 @@ async function openCaseList(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("visitor journeys", () => {
-  it.each(scenarios)("completes curated variant $id", async (scenario) => {
+  const investigationScenarios = scenarios.filter((scenario): scenario is InvestigationScenario => scenario.activity === "investigation");
+  const cipherScenarios = scenarios.filter((scenario): scenario is CipherScenario => scenario.activity === "cipher");
+
+  it.each(investigationScenarios)("completes curated variant $id", async (scenario) => {
     const user = userEvent.setup();
     render(<App seed={seedForVariant(scenario.id)} />);
     await openCaseList(user);
@@ -44,12 +48,12 @@ describe("visitor journeys", () => {
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /choose the next case/i }));
     expect(screen.getByRole("heading", { name: /which case will you inspect/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(5);
+    expect(screen.getAllByRole("button", { name: /play this case/i })).toHaveLength(6);
     expect(screen.getByRole("button", { name: new RegExp(scenario.title, "i") })).not.toHaveAttribute("data-scenario-id", scenario.id);
   });
 
   it("explains a false positive in the safe scenario", async () => {
-    const safeScenario = scenarios.find((scenario) => scenario.correctDecision === "safe")!;
+    const safeScenario = investigationScenarios.find((scenario) => scenario.correctDecision === "safe")!;
     const user = userEvent.setup();
     render(<App seed={seedForVariant(safeScenario.id)} />);
     await openCaseList(user);
@@ -59,6 +63,27 @@ describe("visitor journeys", () => {
     await user.click(screen.getByRole("button", { name: /safe$/i }));
     expect(screen.getByText(/false positive/i)).toBeInTheDocument();
     expect(screen.getByText(/no designed warning signs/i)).toBeInTheDocument();
+  });
+
+  it.each(cipherScenarios)("decodes curated cipher variant $id", async (scenario) => {
+    const user = userEvent.setup();
+    render(<App seed={seedForVariant(scenario.id)} />);
+    await openCaseList(user);
+    await user.click(screen.getByRole("button", { name: new RegExp(scenario.title, "i") }));
+
+    await user.click(screen.getByRole("button", { name: /lock in decryption/i }));
+    expect(screen.getByText(/not readable yet/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /show hint 1/i }));
+    expect(screen.getByText(scenario.content.hints[0])).toBeInTheDocument();
+    for (let step = 0; step < scenario.content.shift; step += 1) {
+      await user.click(screen.getByRole("button", { name: /next shift/i }));
+    }
+    expect(screen.getByText(scenario.content.plaintext)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /lock in decryption/i }));
+    expect(screen.getByRole("heading", { name: /message decoded/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /see my result/i }));
+    expect(screen.getByText(/out of 100 points/i)).toBeInTheDocument();
+    expect(screen.getByText("85", { selector: ".score strong" })).toBeInTheDocument();
   });
 
   it("offers keyboard-operable scenario and evidence controls", async () => {

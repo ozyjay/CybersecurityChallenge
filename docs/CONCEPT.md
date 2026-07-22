@@ -27,6 +27,7 @@ use of technical tools.
 3. Too-good-to-be-true internship
 4. Shared document login page
 5. Expected service notification (genuinely safe comparison case)
+6. Caesar cipher puzzle demonstrating why historical shifts do not protect secrets
 
 Each family has two reviewed local variants. A seeded randomiser chooses one
 variant per family and changes their order between rounds. Benign details can be

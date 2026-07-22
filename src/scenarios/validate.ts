@@ -1,25 +1,26 @@
-import type { Scenario, ScenarioContent } from "../types/scenario";
+import { decodeCaesar } from "../cipher";
+import type { InvestigationContent, Scenario } from "../types/scenario";
 
 const allowedDomains = ["example.com", "example.org", "example.net"];
 const unsafeMarkup = /<\/?(?:script|iframe|form|input|button|object|embed)\b|javascript:|data:text\/html/i;
 const urlPattern = /https?:\/\/([^\s/"']+)/gi;
 const emailPattern = /[\w.+-]+@([\w.-]+\.[a-z]{2,})/gi;
 
-const regionsByKind: Record<ScenarioContent["kind"], readonly string[]> = {
+const regionsByKind: Record<InvestigationContent["kind"], readonly string[]> = {
   email: ["sender", "recipient", "subject", "greeting", "paragraph-0", "paragraph-1", "action", "signoff"],
   message: ["sender", "heading", "paragraph-0", "pay", "deadline", "platform", "payment", "company"],
   qr: ["organisation", "headline", "offer", "qr", "installation", "permissions", "support"],
   login: ["url", "brand", "document", "sender", "context", "credentials", "support"]
 };
 
-const expectedCategory: Record<ScenarioContent["kind"], Scenario["category"]> = {
+const expectedCategory: Record<InvestigationContent["kind"], Scenario["category"]> = {
   email: "email",
   message: "sms",
   qr: "qr",
   login: "login"
 };
 
-const requiredContent: Record<ScenarioContent["kind"], { strings: readonly string[]; arrays: readonly string[] }> = {
+const requiredContent: Record<InvestigationContent["kind"], { strings: readonly string[]; arrays: readonly string[] }> = {
   email: { strings: ["displayName", "sender", "recipient", "subject", "greeting", "actionLabel", "actionUrl", "signoff"], arrays: ["paragraphs"] },
   message: { strings: ["channelLabel", "sender", "receivedAt", "heading", "payOffer", "deadline", "platformRequest", "paymentRequest", "companyDetails"], arrays: ["paragraphs"] },
   qr: { strings: ["organisation", "headline", "offer", "scanLabel", "displayedUrl", "installationRequest", "supportText"], arrays: ["permissions"] },
@@ -51,27 +52,54 @@ export function validateScenario(value: unknown): string[] {
   for (const field of ["introduction", "takeaway", "careerConnection"] as const) {
     if (!presentString(value[field])) errors.push(`Scenario requires a non-empty ${field}.`);
   }
-  if (!presentString(value.category) || !["email", "sms", "qr", "login", "permissions"].includes(value.category)) {
+  if (!presentString(value.category) || !["email", "sms", "qr", "login", "permissions", "cipher"].includes(value.category)) {
     errors.push("Scenario requires a supported category.");
   }
   if (!presentString(value.difficulty) || !["starter", "intermediate"].includes(value.difficulty)) {
     errors.push("Scenario requires a supported difficulty.");
   }
-  if (!isRecord(value.content) || !presentString(value.content.kind) || !(value.content.kind in regionsByKind)) {
+  if (!presentString(value.activity) || !["investigation", "cipher"].includes(value.activity)) {
+    errors.push("Scenario requires a supported activity.");
+  }
+  if (!isRecord(value.content) || !presentString(value.content.kind) || (!(value.content.kind in regionsByKind) && value.content.kind !== "cipher")) {
     errors.push("Scenario requires a supported content kind.");
   }
-  if (!Array.isArray(value.clues)) errors.push("Scenario requires a clue list.");
-  if (Array.isArray(value.clues) && value.clues.length === 0 && value.correctDecision !== "safe") {
-    errors.push("A non-safe scenario requires at least one clue.");
-  }
-  if (!Array.isArray(value.decoys) || value.decoys.length === 0) errors.push("Scenario requires at least one curated benign region.");
-  if (!presentString(value.correctDecision) || !["safe", "suspicious", "escalate"].includes(value.correctDecision)) {
-    errors.push("Scenario requires a supported correct decision.");
+  if (value.activity === "cipher") {
+    if (value.category !== "cipher" || !isRecord(value.content) || value.content.kind !== "cipher") {
+      errors.push("Cipher activity requires matching cipher category and content.");
+    } else {
+      for (const field of ["ciphertext", "plaintext", "revealExplanation"] as const) {
+        if (!presentString(value.content[field])) errors.push(`cipher content requires a non-empty ${field}.`);
+      }
+      if (!Number.isInteger(value.content.shift) || Number(value.content.shift) < 1 || Number(value.content.shift) > 25) {
+        errors.push("Cipher shift must be an integer from 1 to 25.");
+      }
+      if (!Array.isArray(value.content.hints) || value.content.hints.length !== 2 || value.content.hints.some((hint) => !presentString(hint))) {
+        errors.push("Cipher content requires exactly two non-empty hints.");
+      }
+      if (presentString(value.content.ciphertext) && presentString(value.content.plaintext) && Number.isInteger(value.content.shift) && Number(value.content.shift) >= 1 && Number(value.content.shift) <= 25) {
+        if (decodeCaesar(value.content.ciphertext, Number(value.content.shift)) !== value.content.plaintext) {
+          errors.push("Ciphertext, plaintext, and shift do not match.");
+        }
+      }
+    }
+  } else {
+    if (value.category === "cipher" || (isRecord(value.content) && value.content.kind === "cipher")) {
+      errors.push("Investigation activity cannot use cipher category or content.");
+    }
+    if (!Array.isArray(value.clues)) errors.push("Scenario requires a clue list.");
+    if (Array.isArray(value.clues) && value.clues.length === 0 && value.correctDecision !== "safe") {
+      errors.push("A non-safe scenario requires at least one clue.");
+    }
+    if (!Array.isArray(value.decoys) || value.decoys.length === 0) errors.push("Scenario requires at least one curated benign region.");
+    if (!presentString(value.correctDecision) || !["safe", "suspicious", "escalate"].includes(value.correctDecision)) {
+      errors.push("Scenario requires a supported correct decision.");
+    }
   }
 
   errors.push(...collectEmptyStrings(value));
 
-  if (Array.isArray(value.clues) && Array.isArray(value.decoys)) {
+  if (value.activity !== "cipher" && Array.isArray(value.clues) && Array.isArray(value.decoys)) {
     const evidence = [...value.clues, ...value.decoys];
     for (const item of evidence) {
       if (!isRecord(item)) {
@@ -94,7 +122,7 @@ export function validateScenario(value: unknown): string[] {
     if (new Set(regions).size !== regions.length) errors.push("Selectable regions must be unique within a scenario.");
 
     if (isRecord(value.content) && presentString(value.content.kind) && value.content.kind in regionsByKind) {
-      const kind = value.content.kind as ScenarioContent["kind"];
+      const kind = value.content.kind as InvestigationContent["kind"];
       const supported = regionsByKind[kind];
       const required = requiredContent[kind];
       for (const field of required.strings) {

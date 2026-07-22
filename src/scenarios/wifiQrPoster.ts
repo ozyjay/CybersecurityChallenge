@@ -2,6 +2,7 @@ import type { ScenarioFamily } from "../types/scenario";
 
 export const wifiQrPoster = {
   id: "premium-wifi-qr",
+  activity: "investigation",
   title: "Premium campus Wi-Fi poster",
   category: "qr",
   difficulty: "starter",

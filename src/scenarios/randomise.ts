@@ -1,4 +1,4 @@
-import type { Scenario, ScenarioFamily, ScenarioVariant } from "../types/scenario";
+import type { Scenario, ScenarioFamily } from "../types/scenario";
 
 function seededRandom(seed: number): () => number {
   let state = seed >>> 0;
@@ -11,31 +11,46 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-function materialise(family: ScenarioFamily, variant?: ScenarioVariant): Scenario {
+function materialise(family: ScenarioFamily, variantIndex = -1): Scenario {
+  if (family.activity === "cipher") {
+    const { variants: _variants, id: familyId, ...base } = family;
+    const cipherVariant = variantIndex >= 0 ? family.variants[variantIndex] : undefined;
+    const variantId = cipherVariant?.id ?? "original";
+    return {
+      ...base,
+      id: `${familyId}:${variantId}`,
+      familyId,
+      variantId,
+      content: cipherVariant?.content ?? family.content,
+      takeaway: cipherVariant?.takeaway ?? family.takeaway,
+      careerConnection: cipherVariant?.careerConnection ?? family.careerConnection
+    };
+  }
   const { variants: _variants, id: familyId, ...base } = family;
-  const variantId = variant?.id ?? "original";
+  const investigationVariant = variantIndex >= 0 ? family.variants[variantIndex] : undefined;
+  const variantId = investigationVariant?.id ?? "original";
   return {
     ...base,
     id: `${familyId}:${variantId}`,
     familyId,
     variantId,
-    content: variant?.content ?? base.content,
-    clues: variant?.clues ?? base.clues,
-    decoys: variant?.decoys ?? base.decoys,
-    takeaway: variant?.takeaway ?? base.takeaway,
-    careerConnection: variant?.careerConnection ?? base.careerConnection
+    content: investigationVariant?.content ?? family.content,
+    clues: investigationVariant?.clues ?? family.clues,
+    decoys: investigationVariant?.decoys ?? family.decoys,
+    takeaway: investigationVariant?.takeaway ?? family.takeaway,
+    careerConnection: investigationVariant?.careerConnection ?? family.careerConnection
   };
 }
 
 export function allVariants(families: readonly ScenarioFamily[]): Scenario[] {
-  return families.flatMap((family) => [materialise(family), ...family.variants.map((variant) => materialise(family, variant))]);
+  return families.flatMap((family) => [materialise(family), ...family.variants.map((_, index) => materialise(family, index))]);
 }
 
 export function buildScenarioDeck(families: readonly ScenarioFamily[], seed: number, excludedScenarioIds: readonly string[] = []): Scenario[] {
   const random = seededRandom(seed);
   const excluded = new Set(excludedScenarioIds);
   const deck = families.map((family) => {
-    const allChoices = [materialise(family), ...family.variants.map((variant) => materialise(family, variant))];
+    const allChoices = [materialise(family), ...family.variants.map((_, index) => materialise(family, index))];
     const availableChoices = allChoices.filter((scenario) => !excluded.has(scenario.id));
     const choices = availableChoices.length > 0 ? availableChoices : allChoices;
     return choices[Math.floor(random() * choices.length)];

@@ -1,8 +1,8 @@
-import type { Scenario } from "../types/scenario";
+import type { InvestigationScenario } from "../types/scenario";
 import { SelectableRegion } from "./SelectableRegion";
 
 type Props = {
-  scenario: Scenario;
+  scenario: InvestigationScenario;
   selectedClueIds: string[];
   interactive: boolean;
   onToggle: (clueId: string) => void;

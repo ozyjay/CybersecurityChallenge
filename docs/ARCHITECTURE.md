@@ -12,7 +12,7 @@ initial state.
 - `src/App.tsx` coordinates screens and visitor actions.
 - `src/components/ScenarioDisplay.tsx` dispatches to format-specific renderers.
 - `src/components/SelectableRegion.tsx` provides shared accessible clue controls.
-- `src/scenarios/index.ts` exposes five local scenario families and ten variants.
+- `src/scenarios/index.ts` exposes six local scenario families and twelve variants.
 - `src/scenarios/randomise.ts` selects one variant per family and shuffles the
   deck through a deterministic seeded pseudo-random generator.
 - `src/components/StaffControls.tsx` provides session-only booth settings and
@@ -26,7 +26,9 @@ initial state.
 - `src/state/game.ts` owns transitions and deterministic scoring.
 - `src/types/scenario.ts` defines the extensible scenario contract.
 
-The state machine follows `ATTRACT → INTRO → SCENARIO → DECISION → REVEAL → RESULT`.
+Investigation cases follow `ATTRACT → INTRO → SCENARIO → DECISION → REVEAL → RESULT`.
+Cipher cases follow `ATTRACT → INTRO → SCENARIO → REVEAL → RESULT` and retain
+their shift, hint count, and incorrect attempts only in volatile game state.
 `BEGIN` records the selected variant identifier. From the result screen,
 `NEXT_CASE` records that completed variant, increments the in-memory round seed,
 and returns to `INTRO`. The next deck excludes only that exact variant, leaving
@@ -38,7 +40,9 @@ its identifier, preventing duplicate scoring.
 Timer configuration remains outside visitor game state so next-visitor reset can
 clear interaction data without discarding booth settings. The timer runs only on
 the interactive `SCENARIO` screen, is disabled during replay, doubles its duration
-in relaxed mode, and cancels whenever the screen or case changes.
+in relaxed mode, and cancels whenever the screen or case changes. Investigation
+timers advance to a decision; an expired cipher timer remains at zero and allows
+the visitor to continue.
 
 Prepared replay uses normal reducer actions: start a seeded scenario, select up
 to three reviewed clues, open the decision, choose the authored correct response,
@@ -47,11 +51,12 @@ the seeded deck. A capture-level pointer or keyboard listener cancels replay and
 performs a clean next-visitor reset. Scheduled replay steps are disposed whenever
 the stage changes or replay is interrupted.
 
-`ScenarioContent` is a discriminated union. The current content kinds are email,
-direct message, QR poster, and sign-in page. Each renderer maps its prepared
+`Scenario` and `ScenarioContent` are discriminated unions. The current content
+kinds are email, direct message, QR poster, sign-in page, and cipher. Investigation renderers map their prepared
 content regions to clue identifiers through the shared selectable-region control.
 The QR pattern and credential fields are inert visual elements, not links or
-inputs.
+inputs. The cipher renderer applies only a fixed A–Z Caesar shift to reviewed
+local text; it has no free-text input.
 
 Each `ScenarioFamily` contains a reviewed base case plus reviewed variants. At
 session start and after a case transition, the app derives a deck from a random

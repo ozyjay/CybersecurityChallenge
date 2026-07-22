@@ -17,7 +17,7 @@ const forbidden = [
 ];
 
 const errors = [];
-if (sources.length < 5) errors.push(`Expected at least five scenario family files, found ${sources.length}.`);
+if (sources.length < 6) errors.push(`Expected at least six scenario family files, found ${sources.length}.`);
 
 for (const { name, source } of sources) {
   if (!/satisfies Scenario/.test(source)) errors.push(`${name}: scenario must satisfy the typed Scenario contract.`);

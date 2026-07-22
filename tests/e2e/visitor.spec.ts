@@ -6,7 +6,7 @@ test("visitor completes a case and receives an alternate variant", async ({ page
   await page.goto("/?seed=42");
   await expect(page.getByRole("heading", { name: /can you spot the warning signs/i })).toBeVisible();
   await page.getByRole("button", { name: /tap to begin/i }).click();
-  await expect(page.getByRole("button", { name: /play this case/i })).toHaveCount(5);
+  await expect(page.getByRole("button", { name: /play this case/i })).toHaveCount(6);
 
   const caseButton = page.getByRole("button", { name: /urgent account warning/i });
   const firstVariant = await caseButton.getAttribute("data-scenario-id");
@@ -19,6 +19,22 @@ test("visitor completes a case and receives an alternate variant", async ({ page
   await expect(page.getByText(/out of 80 points/i)).toBeVisible();
   await page.getByRole("button", { name: /choose the next case/i }).click();
   await expect(page.getByRole("button", { name: /urgent account warning/i })).not.toHaveAttribute("data-scenario-id", firstVariant ?? "");
+  runtime.assertClean();
+});
+
+test("visitor decodes a local cipher without network activity", async ({ page }) => {
+  const runtime = guardLocalRuntime(page);
+  await page.goto("/?seed=42");
+  await page.getByRole("button", { name: /tap to begin/i }).click();
+  const cipherCase = page.getByRole("button", { name: /decode the secret message/i });
+  const variantId = await cipherCase.getAttribute("data-scenario-id");
+  const shift = variantId?.endsWith(":modern-encryption") ? 7 : 3;
+  await cipherCase.click();
+  for (let step = 0; step < shift; step += 1) await page.getByRole("button", { name: /next shift/i }).click();
+  await page.getByRole("button", { name: /lock in decryption/i }).click();
+  await expect(page.getByRole("heading", { name: /message decoded/i })).toBeVisible();
+  await page.getByRole("button", { name: /see my result/i }).click();
+  await expect(page.getByText(/out of 100 points/i)).toBeVisible();
   runtime.assertClean();
 });
 
