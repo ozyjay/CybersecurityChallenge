@@ -56,6 +56,12 @@ On Windows PowerShell:
 .\scripts\test.ps1 -BurnInMinutes 10
 ```
 
+It runs for 10 minutes by default, repeatedly completes a visitor case, exercises
+replay interruption every ten cycles, and fails on page errors, console errors or
+external requests. A `BURN_IN_MINUTES` value below 10 may shorten local proof
+runs, but does not satisfy the readiness gate. Record the date, version, machine,
+duration, completed cycles and outcome in the event verification record.
+
 Start and stop the production build on the formally approved event port:
 
 ```powershell
@@ -77,11 +83,25 @@ Hotspot address for visitor instructions and verify it from a phone before the
 session. Do not treat the displayed development or test addresses as an event
 allocation.
 
-It runs for 10 minutes by default, repeatedly completes a visitor case, exercises
-replay interruption every ten cycles, and fails on page errors, console errors or
-external requests. A `BURN_IN_MINUTES` value below 10 may shorten local proof
-runs, but does not satisfy the readiness gate. Record the date, version, machine,
-duration, completed cycles and outcome in the event verification record.
+If a hotspot phone cannot connect while the booth computer can open the hotspot
+URL, enable the demo-only firewall rule and approve the Windows Administrator
+prompt:
+
+```powershell
+.\scripts\firewall.cmd -Action Enable -AppPort <approved-port>
+```
+
+Inspect or disable that same rule without changing unrelated firewall policy:
+
+```powershell
+.\scripts\firewall.cmd -Action Status  -AppPort <approved-port>
+.\scripts\firewall.cmd -Action Disable -AppPort <approved-port>
+```
+
+The command launcher bypasses script execution policy only for its child
+PowerShell process and does not make a persistent policy change. Status is
+read-only, but may request Administrator approval when Windows restricts firewall
+rule queries.
 
 ## Smoke test
 

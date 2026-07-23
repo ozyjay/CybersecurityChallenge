@@ -82,6 +82,23 @@ booth-computer address and each usable private phone address, prioritising the
 Windows Mobile Hotspot adapter. It never prints loopback or automatic
 `169.254.x.x` fallback addresses as phone destinations.
 
+If Windows Firewall blocks hotspot phones, manage the demo's narrowly scoped
+rule:
+
+```powershell
+.\scripts\firewall.cmd -Action Enable  -AppPort <approved-port>
+.\scripts\firewall.cmd -Action Status  -AppPort <approved-port>
+.\scripts\firewall.cmd -Action Disable -AppPort <approved-port>
+```
+
+The rule applies only to the detected `node.exe`, the selected TCP port, local
+address `192.168.137.1`, and remote hotspot subnet `192.168.137.0/24`. Disabling
+it does not alter unrelated Node or Windows Firewall rules. The command launcher
+uses an execution-policy bypass only for its child PowerShell process; it does not
+change the computer's execution policy. The commands request Administrator
+approval through the standard Windows prompt when the current account cannot
+query firewall rules; Status remains read-only.
+
 Project scripts launch the checked-in dependency versions from `node_modules`
 through the active Node executable. They do not rely on `npx`, globally installed
 tools, or Snap-packaged Chromium. If a confined package-manager shim is still
