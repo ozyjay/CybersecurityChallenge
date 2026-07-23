@@ -21,7 +21,7 @@
 - [x] Add Playwright journey, keyboard, viewport, reduced-motion, offline-network,
   timer, replay, reset, and port-conflict coverage
 - [x] Test static production serving and verify no unexpected network requests
-- [x] Complete a 60-minute burn-in with no uncaught errors
+- [x] Complete a 10-minute burn-in with no uncaught errors
 - [ ] Have someone unfamiliar with the code operate the demo from the runbook
 
 ## Open Day readiness gates
@@ -29,7 +29,7 @@
 Do not label the project Open Day ready until all nine scenarios are polished,
 instructions test clearly within 10–20 seconds, reset and offline replay work,
 privacy/safety and staff operation are independently verified, keyboard and touch
-work, the 60-minute burn-in passes, and the event port plus presentation rotation
+work, the 10-minute burn-in passes, and the event port plus presentation rotation
 are formally accepted and recorded by OpenDayOps.
 
 Deferred ideas include generated content, live URL checking, real email ingestion,

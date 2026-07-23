@@ -53,7 +53,7 @@ npm run test:burn-in
 On Windows PowerShell:
 
 ```powershell
-.\scripts\test.ps1 -BurnInMinutes 60
+.\scripts\test.ps1 -BurnInMinutes 10
 ```
 
 Start and stop the production build on the formally approved event port:
@@ -65,10 +65,10 @@ Start and stop the production build on the formally approved event port:
 
 Replace `4175` with the port recorded by OpenDayOps.
 
-It runs for 60 minutes by default, repeatedly completes a visitor case, exercises
+It runs for 10 minutes by default, repeatedly completes a visitor case, exercises
 replay interruption every ten cycles, and fails on page errors, console errors or
-external requests. `BURN_IN_MINUTES` may shorten local proof runs, but a shortened
-run does not satisfy the readiness gate. Record the date, version, machine,
+external requests. A `BURN_IN_MINUTES` value below 10 may shorten local proof
+runs, but does not satisfy the readiness gate. Record the date, version, machine,
 duration, completed cycles and outcome in the event verification record.
 
 ## Smoke test

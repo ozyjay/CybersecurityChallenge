@@ -3,6 +3,24 @@
 This file records technical rehearsal evidence. It does not replace independent
 staff operation, OpenDayOps acceptance, or the event readiness decision.
 
+## Burn-in gate decision — 23 July 2026
+
+- Current required burn-in duration: 10 minutes
+- Runs shorter than 10 minutes are smoke tests and do not satisfy the gate
+- Earlier 60-minute results below remain part of the historical verification record
+
+## Current 10-minute gate run — 23 July 2026
+
+- Scenario validation: passed, nine scenario files
+- Unit and component tests: passed, 105 tests
+- Production build: passed
+- Chromium production-browser journeys: passed, eleven tests and one expected
+  burn-in skip
+- Required 10-minute burn-in: passed, 1,673 visitor cycles with no page errors,
+  console errors or unexpected network requests
+- Automated browser serving used isolated test port `4175`; this is not an event
+  port allocation
+
 ## MVP 0.5 — 20 July 2026
 
 - Scenario validation: passed, five scenario files

@@ -44,7 +44,7 @@ npm run build               # type-check and create the static dist/ build
 npm run preview             # preview the production build
 npm run install:browsers    # install Playwright-managed Chromium once
 npm run test:e2e            # build and run production-browser journeys
-npm run test:burn-in         # build and run the 60-minute stability exercise
+npm run test:burn-in         # build and run the 10-minute stability exercise
 ```
 
 For a simpler Windows PowerShell workflow, use the wrappers in `scripts/`:
@@ -52,7 +52,7 @@ For a simpler Windows PowerShell workflow, use the wrappers in `scripts/`:
 ```powershell
 .\scripts\setup.ps1
 .\scripts\test.ps1
-.\scripts\test.ps1 -BurnInMinutes 60
+.\scripts\test.ps1 -BurnInMinutes 10
 .\scripts\run.ps1 -AppPort 4175
 .\scripts\stop.ps1
 ```

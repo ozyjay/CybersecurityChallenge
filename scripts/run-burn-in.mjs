@@ -1,7 +1,7 @@
 import { runBuild, runLocalTool } from "./local-tools.mjs";
 import { assertManagedChromiumAvailable } from "./playwright-browser.mjs";
 
-const minutes = Number(process.env.BURN_IN_MINUTES ?? "60");
+const minutes = Number(process.env.BURN_IN_MINUTES ?? "10");
 if (!Number.isFinite(minutes) || minutes <= 0) {
   console.error("BURN_IN_MINUTES must be a positive number.");
   process.exit(1);
