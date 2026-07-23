@@ -65,6 +65,18 @@ Start and stop the production build on the formally approved event port:
 
 Replace `4175` with the port recorded by OpenDayOps.
 
+For phones connected to the booth computer's approved hotspot, bind the server
+to all local interfaces:
+
+```powershell
+.\scripts\run.ps1 -AppHost 0.0.0.0 -AppPort <approved-port>
+```
+
+The runner prints labelled private IPv4 addresses. Use the Windows Mobile
+Hotspot address for visitor instructions and verify it from a phone before the
+session. Do not treat the displayed development or test addresses as an event
+allocation.
+
 It runs for 10 minutes by default, repeatedly completes a visitor case, exercises
 replay interruption every ten cycles, and fails on page errors, console errors or
 external requests. A `BURN_IN_MINUTES` value below 10 may shorten local proof

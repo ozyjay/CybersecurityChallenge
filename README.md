@@ -70,6 +70,18 @@ Use `-SkipBuild` only when the existing production build is known to be current.
 repository's Vite server, regardless of its configured port. It ignores all
 unrelated software. Use `-WhatIf` to inspect the exact processes first.
 
+To let phones on the same approved hotspot or local network open the demo, bind
+to all local interfaces:
+
+```powershell
+.\scripts\run.ps1 -AppHost 0.0.0.0 -AppPort <approved-port>
+```
+
+Replace `<approved-port>` with the OpenDayOps allocation. The runner prints the
+booth-computer address and each usable private phone address, prioritising the
+Windows Mobile Hotspot adapter. It never prints loopback or automatic
+`169.254.x.x` fallback addresses as phone destinations.
+
 Project scripts launch the checked-in dependency versions from `node_modules`
 through the active Node executable. They do not rely on `npx`, globally installed
 tools, or Snap-packaged Chromium. If a confined package-manager shim is still
