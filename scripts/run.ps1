@@ -73,6 +73,8 @@ function Show-DemoAddresses {
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot "powershell-tools.ps1")
+$demoNodePath = Get-DemoNodeExecutable -ProjectRoot $projectRoot
+$previewScriptPath = Join-Path $PSScriptRoot "run-preview.mjs"
 
 Push-Location $projectRoot
 try {
@@ -86,8 +88,12 @@ try {
   Write-Host ""
   Write-Host "Starting the production build on ${AppHost}:$AppPort" -ForegroundColor Cyan
   Show-DemoAddresses -BindAddress $AppHost -Port $AppPort
+  Write-Host "Demo-only Node runtime: $demoNodePath"
   Write-Host "Press Ctrl+C to stop."
-  Invoke-NpmCommand -Label "Serve dist" -Arguments @("run", "preview")
+  & $demoNodePath $previewScriptPath
+  if ($LASTEXITCODE -ne 0) {
+    throw "Serve dist failed with exit code $LASTEXITCODE."
+  }
 } finally {
   Pop-Location
 }

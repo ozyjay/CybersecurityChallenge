@@ -18,13 +18,12 @@ $ErrorActionPreference = "Stop"
 $hotspotAddress = "192.168.137.1"
 $hotspotSubnet = "192.168.137.0/24"
 $ruleName = "Cybersecurity Challenge Demo - Hotspot TCP $AppPort"
-$nodeCommand = Get-Command node.exe -ErrorAction SilentlyContinue
-
-if ($null -eq $nodeCommand) {
-  throw "node.exe is unavailable. Run scripts\setup.ps1 before configuring the firewall."
+$projectRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "powershell-tools.ps1")
+$nodePath = Join-Path $projectRoot ".demo-runtime\node.exe"
+if ($Action -eq "Enable") {
+  $nodePath = Get-DemoNodeExecutable -ProjectRoot $projectRoot
 }
-
-$nodePath = $nodeCommand.Source
 
 function Test-IsAdministrator {
   $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -150,6 +149,9 @@ try {
           -Profile Any | Out-Null
       }
     } elseif ($PSCmdlet.ShouldProcess($ruleName, "Enable the existing hotspot-only firewall rule")) {
+      $existingRules |
+        Get-NetFirewallApplicationFilter |
+        Set-NetFirewallApplicationFilter -Program $nodePath
       $existingRules | Set-NetFirewallRule -Enabled True -EdgeTraversalPolicy Allow
     }
   } elseif ($Action -eq "Disable" -and $existingRules.Count -gt 0) {

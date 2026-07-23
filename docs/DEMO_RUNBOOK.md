@@ -102,7 +102,9 @@ The command launcher bypasses script execution policy only for its child
 PowerShell process and does not make a persistent policy change. Status is
 read-only, but may request Administrator approval when Windows restricts firewall
 rule queries. The rule permits edge traversal only for the selected demo port,
-Node executable, hotspot address and hotspot client subnet.
+project-local demo Node runtime, hotspot address and hotspot client subnet.
+Windows-wide allow or block rules for the installed Node executable are left
+unchanged.
 
 ## Smoke test
 
