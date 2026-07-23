@@ -1,54 +1,76 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
-param(
-  [Parameter(Mandatory = $true)]
-  [ValidateRange(1024, 65535)]
-  [int]$AppPort
-)
+param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+$requestedWhatIf = $WhatIfPreference
+try {
+  $WhatIfPreference = $false
+  Import-Module CimCmdlets
+  Import-Module NetTCPIP
+} finally {
+  $WhatIfPreference = $requestedWhatIf
+}
+
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$listeners = @(Get-NetTCPConnection -LocalPort $AppPort -State Listen -ErrorAction SilentlyContinue)
+$listeners = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue)
 if ($listeners.Count -eq 0) {
-  Write-Host "No server is listening on port $AppPort." -ForegroundColor Yellow
+  Write-Host "No listening TCP servers were found." -ForegroundColor Yellow
   exit 0
 }
 
 $expectedVitePath = Join-Path $projectRoot "node_modules\vite\bin\vite.js"
 $processIds = @($listeners.OwningProcess | Sort-Object -Unique)
-$verifiedProcesses = foreach ($processId in $processIds) {
-  $process = Get-CimInstance Win32_Process -Filter "ProcessId = $processId" -ErrorAction SilentlyContinue
-  if (
-    $null -eq $process -or
-    [string]::IsNullOrWhiteSpace($process.CommandLine) -or
-    $process.CommandLine.IndexOf($expectedVitePath, [System.StringComparison]::OrdinalIgnoreCase) -lt 0
-  ) {
-    throw "Port $AppPort is owned by process $processId, which is not this project's Vite server. Nothing was stopped."
+$projectServers = @(
+  foreach ($processId in $processIds) {
+    $process = Get-CimInstance Win32_Process -Filter "ProcessId = $processId" -ErrorAction SilentlyContinue
+    if (
+      $null -ne $process -and
+      -not [string]::IsNullOrWhiteSpace($process.CommandLine) -and
+      $process.CommandLine.IndexOf($expectedVitePath, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
+    ) {
+      [PSCustomObject]@{
+        Process = $process
+        Ports = @($listeners | Where-Object OwningProcess -eq $processId | Select-Object -ExpandProperty LocalPort -Unique | Sort-Object)
+      }
+    }
   }
-  $process
+)
+
+if ($projectServers.Count -eq 0) {
+  Write-Host "No running Vite servers belong to this demo." -ForegroundColor Yellow
+  exit 0
 }
 
-$stoppedProcessCount = 0
-foreach ($process in $verifiedProcesses) {
-  if ($PSCmdlet.ShouldProcess("process $($process.ProcessId) on port $AppPort", "Stop this project's Vite server")) {
-    Stop-Process -Id $process.ProcessId -ErrorAction Stop
-    $stoppedProcessCount += 1
+$stoppedProcessIds = @()
+$stoppedPorts = @()
+foreach ($server in $projectServers) {
+  $portList = $server.Ports -join ", "
+  $processId = $server.Process.ProcessId
+  if ($PSCmdlet.ShouldProcess("process $processId listening on port(s) $portList", "Stop this demo's Vite server")) {
+    Stop-Process -Id $processId -ErrorAction Stop
+    $stoppedProcessIds += $processId
+    $stoppedPorts += $server.Ports
   }
 }
 
-if ($stoppedProcessCount -eq 0) {
+if ($stoppedProcessIds.Count -eq 0) {
   exit 0
 }
 
 $deadline = [DateTime]::UtcNow.AddSeconds(5)
 do {
   Start-Sleep -Milliseconds 100
-  $remainingListeners = @(Get-NetTCPConnection -LocalPort $AppPort -State Listen -ErrorAction SilentlyContinue)
+  $remainingListeners = @(
+    Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
+      Where-Object OwningProcess -in $stoppedProcessIds
+  )
 } while ($remainingListeners.Count -gt 0 -and [DateTime]::UtcNow -lt $deadline)
 
 if ($remainingListeners.Count -gt 0) {
-  throw "The project server was stopped, but port $AppPort is still occupied."
+  throw "One or more demo server processes did not release their listeners."
 }
 
-Write-Host "Stopped the project server on port $AppPort." -ForegroundColor Green
+$uniquePorts = @($stoppedPorts | Sort-Object -Unique)
+Write-Host "Stopped this demo's Vite server(s) on port(s): $($uniquePorts -join ', ')." -ForegroundColor Green

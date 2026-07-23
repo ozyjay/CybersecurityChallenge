@@ -60,7 +60,7 @@ Start and stop the production build on the formally approved event port:
 
 ```powershell
 .\scripts\run.ps1 -AppPort 4175
-.\scripts\stop.ps1 -AppPort 4175
+.\scripts\stop.ps1
 ```
 
 Replace `4175` with the port recorded by OpenDayOps.
