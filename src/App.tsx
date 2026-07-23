@@ -83,6 +83,11 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
         ? state.cipherKeyword === scenario.content.keyword
         : state.cipherDraft === cipherWords[state.cipherWordIndex]
   );
+  const nextCipherKeyword = (() => {
+    if (scenario?.activity !== "cipher" || scenario.content.cipherType !== "vigenere") return undefined;
+    const { keyword, keywordOptions } = scenario.content;
+    return keywordOptions.find((option) => option !== keyword);
+  })();
   const cipherRevealLabel = scenario?.activity === "cipher"
     ? scenario.content.cipherType === "caesar"
       ? `Shift ${scenario.content.shift}`
@@ -210,7 +215,9 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
                     <h2>{countdown.expired ? "Time’s up — keep going" : "Find the readable message"}</h2>
                     <p>{scenario.content.cipherType === "caesar"
                       ? "Rotate the alphabet, then lock in each word. The rotation resets before the next word."
-                      : "Use the decoder designed for this cipher, then lock in each word. Any discovered key or mapping carries forward."}</p>
+                      : scenario.content.cipherType === "vigenere"
+                        ? "Test a keyword, then lock in each word. An incorrect reviewed keyword is selected before the next word."
+                        : "Use the decoder designed for this cipher, then lock in each word. The discovered mapping carries forward."}</p>
                     {state.cipherHintsUsed > 0 && <ol className="hint-list" aria-label="Cipher hints">{scenario.content.hints.slice(0, state.cipherHintsUsed).map((hint) => <li key={hint}>{hint}</li>)}</ol>}
                     {state.cipherAttemptIncorrect && <p className="attempt-status" role="status">That word is not readable yet — adjust the decoder and try again.</p>}
                     {state.cipherHintsUsed < 2 && <button className="quiet-button" type="button" onClick={() => dispatch({ type: "SHOW_CIPHER_HINT" })}>Show hint {state.cipherHintsUsed + 1}</button>}
@@ -218,7 +225,8 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
                       type: "SUBMIT_CIPHER",
                       correct: cipherAttemptCorrect,
                       lastWord: state.cipherWordIndex === cipherWords.length - 1,
-                      nextShift: scenario.content.cipherType === "caesar" ? 0 : undefined
+                      nextShift: scenario.content.cipherType === "caesar" ? 0 : undefined,
+                      nextKeyword: nextCipherKeyword
                     })}>Lock in word</button>
                     <button className="text-button" type="button" onClick={() => dispatch({ type: "RETURN_TO_CASES" })}>Choose another case</button>
                   </> : <>

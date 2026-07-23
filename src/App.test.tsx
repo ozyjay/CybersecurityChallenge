@@ -90,6 +90,12 @@ describe("visitor journeys", () => {
       if (scenario.content.cipherType === "caesar" && wordIndex > 0) {
         expect(decoder.getByText("0", { selector: ".shift-value strong" })).toBeInTheDocument();
         for (let step = 0; step < scenario.content.shift; step += 1) await user.click(decoder.getByRole("button", { name: /next shift/i }));
+      } else if (scenario.content.cipherType === "vigenere" && wordIndex > 0) {
+        const { keyword, keywordOptions } = scenario.content;
+        const incorrectKeyword = keywordOptions.find((option) => option !== keyword)!;
+        expect(decoder.getByRole("button", { name: incorrectKeyword })).toHaveAttribute("aria-pressed", "true");
+        expect(decoder.getByRole("button", { name: keyword })).toHaveAttribute("aria-pressed", "false");
+        await user.click(decoder.getByRole("button", { name: keyword }));
       } else if (scenario.content.cipherType === "atbash") {
         for (const letter of word) await user.click(decoder.getByRole("button", { name: letter }));
       } else if (scenario.content.cipherType === "polybius") {

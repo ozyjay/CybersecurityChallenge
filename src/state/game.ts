@@ -33,7 +33,7 @@ export type GameAction =
   | { type: "REMOVE_CIPHER_LETTER" }
   | { type: "SET_CIPHER_KEYWORD"; keyword: string }
   | { type: "SHOW_CIPHER_HINT" }
-  | { type: "SUBMIT_CIPHER"; correct: boolean; lastWord: boolean; nextShift?: number }
+  | { type: "SUBMIT_CIPHER"; correct: boolean; lastWord: boolean; nextShift?: number; nextKeyword?: string }
   | { type: "SET_REPLAY_CIPHER"; shift?: number; keyword?: string }
   | { type: "SHOW_RESULT" }
   | { type: "NEXT_CASE" }
@@ -119,6 +119,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
               cipherShift: action.nextShift === undefined
                 ? state.cipherShift
                 : ((action.nextShift % 26) + 26) % 26,
+              cipherKeyword: action.nextKeyword ?? state.cipherKeyword,
               cipherWordIndex: state.cipherWordIndex + 1,
               cipherDraft: "",
               cipherAttemptIncorrect: false

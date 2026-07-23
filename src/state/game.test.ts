@@ -35,8 +35,8 @@ describe("game state", () => {
     expect(state.cipherHintsUsed).toBe(2);
     state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: false, lastWord: false });
     expect(state).toMatchObject({ screen: "SCENARIO", cipherIncorrectAttempts: 1, cipherAttemptIncorrect: true });
-    state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: false, nextShift: 0 });
-    expect(state).toMatchObject({ screen: "SCENARIO", cipherShift: 0, cipherWordIndex: 1, cipherAttemptIncorrect: false });
+    state = gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: false, nextShift: 0, nextKeyword: "SOLAR" });
+    expect(state).toMatchObject({ screen: "SCENARIO", cipherShift: 0, cipherKeyword: "SOLAR", cipherWordIndex: 1, cipherAttemptIncorrect: false });
     expect(gameReducer(state, { type: "SUBMIT_CIPHER", correct: true, lastWord: true }).screen).toBe("REVEAL");
   });
 
