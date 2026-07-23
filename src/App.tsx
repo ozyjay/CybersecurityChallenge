@@ -57,6 +57,7 @@ type AppProps = {
 };
 
 export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 1400 }: AppProps) {
+  const isStaffRoute = window.location.pathname.replace(/\/+$/, "") === "/staff";
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
   const [staffOpen, setStaffOpen] = useState(false);
   const [staffSettings, setStaffSettings] = useState(defaultStaffSettings);
@@ -115,6 +116,8 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
   }, [deck, selectedStaffScenarioId]);
 
   useEffect(() => {
+    if (!isStaffRoute) return;
+
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "s") {
         event.preventDefault();
@@ -125,7 +128,7 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
     };
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, []);
+  }, [isStaffRoute]);
 
   useEffect(() => {
     if (state.screen === "RESULT") void playSoundCue(staffSettings.soundEnabled);
@@ -146,7 +149,7 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
         <a className="brand" href="#main" aria-label="Can You Spot the Scam? home">Can You Spot the Scam?</a>
         <div className="header-actions">
           {resetButton}
-          <button className="staff-button" type="button" onClick={() => setStaffOpen((open) => !open)} aria-expanded={staffOpen}>Staff</button>
+          {isStaffRoute && <button className="staff-button" type="button" onClick={() => setStaffOpen((open) => !open)} aria-expanded={staffOpen}>Staff</button>}
         </div>
       </header>
 
@@ -292,21 +295,23 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
         )}
       </main>
 
-      <StaffControls
-        open={staffOpen}
-        settings={staffSettings}
-        scenarios={deck}
-        selectedScenarioId={selectedStaffScenarioId}
-        replayRunning={replay.running}
-        onClose={() => setStaffOpen(false)}
-        onSettingsChange={setStaffSettings}
-        onSelectedScenarioChange={setSelectedStaffScenarioId}
-        onStartScenario={() => closeAnd(() => dispatch({ type: "START_SCENARIO", scenarioId: selectedStaffScenarioId }))}
-        onStartReplay={() => closeAnd(() => replay.start(selectedStaffScenarioId))}
-        onStopReplay={replay.stop}
-        onReturnToAttract={() => closeAnd(() => replay.running ? replay.stop() : dispatch({ type: "RETURN_TO_ATTRACT" }))}
-        onReset={() => closeAnd(() => replay.running ? replay.stop() : dispatch({ type: "RESET" }))}
-      />
+      {isStaffRoute && (
+        <StaffControls
+          open={staffOpen}
+          settings={staffSettings}
+          scenarios={deck}
+          selectedScenarioId={selectedStaffScenarioId}
+          replayRunning={replay.running}
+          onClose={() => setStaffOpen(false)}
+          onSettingsChange={setStaffSettings}
+          onSelectedScenarioChange={setSelectedStaffScenarioId}
+          onStartScenario={() => closeAnd(() => dispatch({ type: "START_SCENARIO", scenarioId: selectedStaffScenarioId }))}
+          onStartReplay={() => closeAnd(() => replay.start(selectedStaffScenarioId))}
+          onStopReplay={replay.stop}
+          onReturnToAttract={() => closeAnd(() => replay.running ? replay.stop() : dispatch({ type: "RETURN_TO_ATTRACT" }))}
+          onReset={() => closeAnd(() => replay.running ? replay.stop() : dispatch({ type: "RESET" }))}
+        />
+      )}
       <footer>Cybersecurity depends on careful design, verification, and informed decisions.</footer>
     </div>
   );

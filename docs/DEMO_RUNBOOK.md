@@ -156,7 +156,9 @@ the onboarding QR whenever the hotspot or demo service is stopped.
 
 ## Staff controls
 
-Open the panel using **Staff** or `Ctrl+Alt+S`; press Escape to close it.
+Open the demo's `/staff` route on the booth display. The visitor route does not
+render staff controls. On `/staff`, open the panel using **Staff** or
+`Ctrl+Alt+S`; press Escape to close it.
 
 - **Timer enabled**: standard 45-second investigation timer.
 - **Relaxed 90-second timer**: doubles the timer without changing scoring.

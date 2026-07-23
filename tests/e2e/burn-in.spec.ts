@@ -10,7 +10,7 @@ test("@burn-in repeated visitor and replay cycles remain stable", async ({ page 
   const finishAt = Date.now() + configuredMinutes * 60_000;
   let cycles = 0;
 
-  await page.goto("/?seed=2026");
+  await page.goto("/staff?seed=2026");
   while (Date.now() < finishAt) {
     await page.getByRole("button", { name: /tap to begin/i }).click();
     await page.getByRole("button", { name: /urgent account warning/i }).click();

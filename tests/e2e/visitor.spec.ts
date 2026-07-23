@@ -5,6 +5,7 @@ test("visitor completes a case and receives an alternate variant", async ({ page
   const runtime = guardLocalRuntime(page);
   await page.goto("/?seed=42");
   await expect(page.getByRole("heading", { name: /can you spot the warning signs/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^staff$/i })).toHaveCount(0);
   await page.getByRole("button", { name: /tap to begin/i }).click();
   await expect(page.getByRole("button", { name: /play this case/i })).toHaveCount(9);
 
@@ -68,8 +69,6 @@ test("keyboard-only visitor navigation reaches scenario evidence", async ({ page
   await page.goto("/?seed=42");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: /can you spot the scam/i })).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: /^staff$/i })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("button", { name: /tap to begin/i })).toBeFocused();
   await page.keyboard.press("Enter");

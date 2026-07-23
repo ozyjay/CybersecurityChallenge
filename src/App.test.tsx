@@ -114,9 +114,8 @@ describe("visitor journeys", () => {
   it("offers keyboard-operable scenario and evidence controls", async () => {
     const user = userEvent.setup();
     render(<App seed={42} />);
+    expect(screen.queryByRole("button", { name: /staff/i })).not.toBeInTheDocument();
     await user.tab();
-    await user.tab();
-    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: /tap to begin/i })).toHaveFocus();
     await user.keyboard("{Enter}");
@@ -125,8 +124,6 @@ describe("visitor journeys", () => {
     await user.tab();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
     await user.tab();
-    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
-    await user.tab();
     const firstCase = screen.getAllByRole("button", { name: /play this case/i })[0];
     expect(firstCase).toHaveFocus();
     await user.keyboard("{Enter}");
@@ -134,8 +131,6 @@ describe("visitor journeys", () => {
     expect(screen.getByRole("link", { name: /can you spot the scam/i })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
-    await user.tab();
-    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
     await user.tab();
     expect(screen.getAllByRole("button", { pressed: false })[0]).toHaveFocus();
   });

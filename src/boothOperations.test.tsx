@@ -1,9 +1,14 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 
-afterEach(() => vi.useRealTimers());
+beforeEach(() => window.history.replaceState({}, "", "/staff"));
+
+afterEach(() => {
+  vi.useRealTimers();
+  window.history.replaceState({}, "", "/");
+});
 
 async function openFirstCase(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: /tap to begin/i }));
