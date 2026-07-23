@@ -28,6 +28,12 @@ npm run build
 npm run test:e2e
 ```
 
+On Windows PowerShell, the equivalent single command is:
+
+```powershell
+.\test.ps1
+```
+
 The browser suite uses isolated local port `4174` by default and fails if it is
 occupied. This is an automated-test default, not an event allocation. Set a
 different permitted test port with `E2E_PORT` when required.
@@ -42,6 +48,12 @@ Run the stability exercise on the intended booth machine and build:
 
 ```bash
 npm run test:burn-in
+```
+
+On Windows PowerShell:
+
+```powershell
+.\test.ps1 -BurnInMinutes 60
 ```
 
 It runs for 60 minutes by default, repeatedly completes a visitor case, exercises

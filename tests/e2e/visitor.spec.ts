@@ -30,9 +30,12 @@ test("visitor decodes a local cipher without network activity", async ({ page })
   const variantId = await cipherCase.getAttribute("data-scenario-id");
   const shift = variantId?.endsWith(":modern-encryption") ? 7 : 3;
   await cipherCase.click();
-  for (let step = 0; step < shift; step += 1) await page.getByRole("button", { name: /next shift/i }).click();
   const wordCount = await page.locator(".word-progress").textContent().then((text) => Number(text?.match(/of (\d+)/)?.[1]));
-  for (let word = 0; word < wordCount; word += 1) await page.getByRole("button", { name: /lock in word/i }).click();
+  for (let word = 0; word < wordCount; word += 1) {
+    if (word > 0) await expect(page.locator(".shift-value strong")).toHaveText("0");
+    for (let step = 0; step < shift; step += 1) await page.getByRole("button", { name: /next shift/i }).click();
+    await page.getByRole("button", { name: /lock in word/i }).click();
+  }
   await expect(page.getByRole("heading", { name: /message decoded/i })).toBeVisible();
   await page.getByRole("button", { name: /see my result/i }).click();
   await expect(page.getByText(/out of 100 points/i)).toBeVisible();

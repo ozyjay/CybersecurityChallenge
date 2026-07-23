@@ -47,6 +47,21 @@ npm run test:e2e            # build and run production-browser journeys
 npm run test:burn-in         # build and run the 60-minute stability exercise
 ```
 
+For a simpler Windows PowerShell workflow, use the root-level wrappers:
+
+```powershell
+.\setup.ps1
+.\test.ps1
+.\test.ps1 -BurnInMinutes 60
+.\run.ps1 -AppPort 4175
+```
+
+`setup.ps1` installs the locked dependencies and Playwright-managed Chromium.
+`test.ps1` runs safety, unit, build, and production-browser checks; burn-in is
+only included when `-BurnInMinutes` is supplied. `run.ps1` builds and serves
+`dist/`, requires an explicit permitted port, and fails if that port is occupied.
+Use `-SkipBuild` only when the existing production build is known to be current.
+
 Project scripts launch the checked-in dependency versions from `node_modules`
 through the active Node executable. They do not rely on `npx`, globally installed
 tools, or Snap-packaged Chromium. If a confined package-manager shim is still
