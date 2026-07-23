@@ -6,7 +6,13 @@ testable phases and preserve unrelated changes.
 This project is a defensive, local-first public awareness demonstration:
 
 - Never add credential collection, visitor-data storage, real login flows,
-  active QR destinations, external links, tracking, analytics, or offensive tools.
+  arbitrary active QR destinations, external links, tracking, analytics, or
+  offensive tools.
+- A staff-controlled onboarding QR is permitted only when it encodes either the
+  approved Windows hotspot connection payload or an allowlisted private URL for
+  this demo on that hotspot. Keep it visually separate from fictional scenario
+  QR artwork, display a human-readable destination or network name beside it,
+  and never derive its payload from visitor input or scenario content.
 - Keep all scenario identities and addresses fictional and use only reserved
   `example.com`, `example.org`, and `example.net` domains.
 - Keep runtime assets local and minimise dependencies. Do not add a backend
