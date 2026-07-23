@@ -106,6 +106,33 @@ project-local demo Node runtime, hotspot address and hotspot client subnet.
 Windows-wide allow or block rules for the installed Node executable are left
 unchanged.
 
+## Trusted onboarding QR
+
+The fictional campus Wi-Fi scenario remains non-scannable. Any live QR shown to
+visitors must be a separate staff-controlled onboarding code and may encode only:
+
+- the approved Windows 10 Mobile Hotspot connection payload; or
+- the allowlisted private demo URL printed by the production runner.
+
+Before displaying it:
+
+1. Confirm the hotspot SSID and passphrase are the approved event values.
+2. Confirm the demo is bound to `0.0.0.0` on the OpenDayOps-approved port.
+3. Confirm the scoped firewall rule is enabled only for `.demo-runtime\node.exe`,
+   the accepted port, `192.168.137.1`, and `192.168.137.0/24`.
+4. Generate the QR from explicit staff configuration. Do not copy a payload from
+   scenario content, visitor input, a remote page, or an unreviewed QR generator.
+5. Display the human-readable SSID or private URL beside the QR.
+6. Scan it with a separate iPhone and Android device. Confirm it joins the
+   intended hotspot or opens exactly the expected private page.
+7. Confirm the phone cannot reach staff-only controls, file sharing, Windows
+   administration, ModelDeck, or unrelated local services.
+8. Keep a printed SSID and typed private URL available as the no-QR fallback.
+
+Do not commit or log the hotspot passphrase, place it in screenshots or replay
+assets, or reuse it after the event without deliberate approval. Cover or remove
+the onboarding QR whenever the hotspot or demo service is stopped.
+
 ## Smoke test
 
 1. Confirm the attract screen, **Tap to begin**, and privacy statement are visible.
@@ -123,6 +150,9 @@ unchanged.
    keyword cards. Request hints, try an incorrect lock-in, and complete one
    decryption. Confirm reset removes all selections, word progress, hints,
    attempts, and score.
+7. If the trusted onboarding QR is enabled, repeat its verification from a fresh
+   phone connection and confirm the fictional QR-style poster is still not
+   scannable.
 
 ## Staff controls
 
@@ -151,9 +181,11 @@ run the visitor timer, and never uses generated content.
 
 ## Staff script
 
-“Choose anything in the fictional message that feels suspicious, or rotate the
-alphabet to decode the cipher. There’s no personal information to enter, all
-links are inactive, and the QR-style poster is not scannable.”
+“Scan the separate connection code only if you want to join this approved local
+hotspot. The QR-style poster inside the challenge is fictional and deliberately
+not scannable. Choose anything in the fictional message that feels suspicious,
+or rotate the alphabet to decode the cipher. There’s no personal information to
+enter, and all scenario links are inactive.”
 
 ## Reset and troubleshooting
 
@@ -166,10 +198,20 @@ restart the local server and repeat the smoke test.
 If replay does not advance, tap once to interrupt it, use **Reset for next
 visitor**, and start it again from staff controls.
 
+If the onboarding QR opens an unexpected destination, remove or cover it
+immediately, disable the scoped firewall rule, stop the hotspot, and follow the
+incident procedure in `docs/SAFETY_AND_PRIVACY.md`.
+
 ## Shutdown
 
-Close the demo tab, press Ctrl+C once in the server terminal, and confirm the
-process exits. No visitor-data clean-up is needed because none is persisted.
+1. Cover or remove the onboarding QR.
+2. Close the demo tab and press Ctrl+C once in the server terminal.
+3. Confirm the process exits.
+4. Disable the demo firewall rule.
+5. Stop the Windows hotspot.
+6. Rotate or retire the event hotspot passphrase as planned.
+
+No visitor-data clean-up is needed because none is persisted.
 
 ## Gate sign-off
 
