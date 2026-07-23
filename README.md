@@ -93,11 +93,12 @@ rule:
 
 The rule applies only to the detected `node.exe`, the selected TCP port, local
 address `192.168.137.1`, and remote hotspot subnet `192.168.137.0/24`. Disabling
-it does not alter unrelated Node or Windows Firewall rules. The command launcher
-uses an execution-policy bypass only for its child PowerShell process; it does not
-change the computer's execution policy. The commands request Administrator
-approval through the standard Windows prompt when the current account cannot
-query firewall rules; Status remains read-only.
+it does not alter unrelated Node or Windows Firewall rules. Edge traversal is
+enabled only for this scoped rule so Windows Mobile Hotspot traffic can reach the
+local demo. The command launcher uses an execution-policy bypass only for its
+child PowerShell process; it does not change the computer's execution policy.
+The commands request Administrator approval through the standard Windows prompt
+when the current account cannot query firewall rules; Status remains read-only.
 
 Project scripts launch the checked-in dependency versions from `node_modules`
 through the active Node executable. They do not rely on `npx`, globally installed

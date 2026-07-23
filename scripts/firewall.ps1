@@ -49,6 +49,7 @@ function Get-ManagedRuleDetails {
       Enabled = $rule.Enabled
       Action = $rule.Action
       Profile = $rule.Profile
+      EdgeTraversalPolicy = $rule.EdgeTraversalPolicy
       Protocol = $portFilter.Protocol
       LocalPort = $portFilter.LocalPort
       LocalAddress = $addressFilter.LocalAddress -join ", "
@@ -145,10 +146,11 @@ try {
           -LocalAddress $hotspotAddress `
           -RemoteAddress $hotspotSubnet `
           -Program $nodePath `
+          -EdgeTraversalPolicy Allow `
           -Profile Any | Out-Null
       }
     } elseif ($PSCmdlet.ShouldProcess($ruleName, "Enable the existing hotspot-only firewall rule")) {
-      $existingRules | Enable-NetFirewallRule
+      $existingRules | Set-NetFirewallRule -Enabled True -EdgeTraversalPolicy Allow
     }
   } elseif ($Action -eq "Disable" -and $existingRules.Count -gt 0) {
     if ($PSCmdlet.ShouldProcess($ruleName, "Disable the hotspot-only firewall rule")) {
