@@ -20,9 +20,10 @@ replay. Phase 4 adds production-build browser journeys for visitor, keyboard,
 touch, compact viewport, reduced-motion, offline, staff, replay, reset, repeated
 cycle, runtime-network, and port-policy behaviour, plus a timed burn-in runner.
 
-The project is **not yet Open Day ready**. Complete the independent rehearsal and
-OpenDayOps fields in `docs/OPEN_DAY_ACCEPTANCE.md`; no formal event port has been
-allocated.
+OpenDayOps has allocated fixed event port `4175`. The project is **not yet Open
+Day ready** until the independent rehearsal, presentation rotation, automated
+verification, and remaining acceptance fields in `docs/OPEN_DAY_ACCEPTANCE.md`
+are complete.
 
 ## Local setup
 
@@ -55,7 +56,7 @@ For a simpler Windows PowerShell workflow, use the wrappers in `scripts/`:
 .\scripts\setup.ps1
 .\scripts\test.ps1
 .\scripts\test.ps1 -BurnInMinutes 10
-.\scripts\run.ps1 -AppPort 4175
+.\scripts\run.ps1 -AppHost 0.0.0.0 -AppPort 4175
 .\scripts\stop.ps1
 ```
 
@@ -70,24 +71,23 @@ Use `-SkipBuild` only when the existing production build is known to be current.
 repository's Vite server, regardless of its configured port. It ignores all
 unrelated software. Use `-WhatIf` to inspect the exact processes first.
 
-To let phones on the same approved hotspot or local network open the demo, bind
-to all local interfaces:
+For Open Day, bind to all local interfaces on the approved fixed port:
 
 ```powershell
-.\scripts\run.ps1 -AppHost 0.0.0.0 -AppPort <approved-port>
+.\scripts\run.ps1 -AppHost 0.0.0.0 -AppPort 4175
 ```
 
-Replace `<approved-port>` with the OpenDayOps allocation. The runner prints the
-booth-computer address and each usable private phone address, prioritising the
-Windows Mobile Hotspot adapter. It never prints loopback or automatic
-`169.254.x.x` fallback addresses as phone destinations.
+The runner prints the booth-computer address and each usable private phone
+address, prioritising the Windows Mobile Hotspot adapter. It never prints
+loopback or automatic `169.254.x.x` fallback addresses as phone destinations.
+The approved visitor URL is `http://<Windows-Mobile-Hotspot-IP>:4175`.
 
 A staff-controlled onboarding QR may encode either the approved Windows hotspot
-connection payload or the printed private demo URL. It must be generated from
-explicit event configuration, displayed with the human-readable SSID or URL,
-and kept separate from the fictional campus Wi-Fi scenario. The scenario's
-QR-style artwork remains deliberately non-scannable. Keep a printed SSID and
-typed private URL as the no-QR fallback. See
+connection payload or the approved private demo URL on port `4175`. It must be
+generated from explicit event configuration, displayed with the human-readable
+SSID or URL, and kept separate from the fictional campus Wi-Fi scenario. The
+scenario's QR-style artwork remains deliberately non-scannable. Keep a printed
+SSID and typed private URL as the no-QR fallback. See
 [`docs/SAFETY_AND_PRIVACY.md`](docs/SAFETY_AND_PRIVACY.md) for the allowlist,
 credential-handling, verification, and shutdown requirements.
 
@@ -95,14 +95,14 @@ If Windows Firewall blocks hotspot phones, manage the demo's narrowly scoped
 rule:
 
 ```powershell
-.\scripts\firewall.cmd -Action Enable  -AppPort <approved-port>
-.\scripts\firewall.cmd -Action Status  -AppPort <approved-port>
-.\scripts\firewall.cmd -Action Disable -AppPort <approved-port>
+.\scripts\firewall.cmd -Action Enable  -AppPort 4175
+.\scripts\firewall.cmd -Action Status  -AppPort 4175
+.\scripts\firewall.cmd -Action Disable -AppPort 4175
 ```
 
 The production runner makes an untracked `.demo-runtime\node.exe` copy of the
-installed Node executable. The rule applies only to that demo runtime, the
-selected TCP port, local address `192.168.137.1`, and remote hotspot subnet
+installed Node executable. The rule applies only to that demo runtime, TCP port
+`4175`, local address `192.168.137.1`, and remote hotspot subnet
 `192.168.137.0/24`. This prevents broad Windows rules for the system Node
 executable from blocking the demo without weakening those rules. Disabling the
 demo rule does not alter unrelated Node or Windows Firewall rules. Edge traversal
@@ -139,24 +139,23 @@ APP_PORT=4173
 DEMO_MODE=development
 ```
 
-`4173` is a development default, not an Open Day allocation. The server uses
+`4173` remains the development default and `4174` remains the automated-test
+default. Open Day uses `APP_HOST=0.0.0.0` and fixed port `4175`. The server uses
 strict port handling and reports a clear error if the port is occupied. Ports
 `3600`, `8600`, and `8610–8699` are rejected because they are owned by ModelDeck.
-An event port must be recorded in the OpenDayOps registry and decisions log.
 
 ## Visitor and staff operation
 
 Select **Tap to begin** and choose one of nine cases. Investigation cases ask you
 to flag suspicious regions and make a safety decision; cipher cases provide a
 method-specific shift dial, mirrored alphabet, coordinate square, or reviewed
-keyword choices. Review the reveal and
-view the result. **Reset for next visitor** or **Choose the next
-case** returns directly to the case list and clears the current score and choices.
-After a completed case, its exact variant is withheld from the next deck; the
-same scenario family remains available through its reviewed alternative. **Reset
-for next visitor** clears this temporary exclusion completely. Refresh the page if
-the browser ever becomes unresponsive. No generated or downloaded scenario text
-is used.
+keyword choices. Review the reveal and view the result. **Reset for next
+visitor** or **Choose the next case** returns directly to the case list and clears
+the current score and choices. After a completed case, its exact variant is
+withheld from the next deck; the same scenario family remains available through
+its reviewed alternative. **Reset for next visitor** clears this temporary
+exclusion completely. Refresh the page if the browser ever becomes unresponsive.
+No generated or downloaded scenario text is used.
 
 Open the staff panel with the unobtrusive **Staff** button or `Ctrl+Alt+S`.
 Staff can configure timing, optional sound, difficulty, exact scenario selection,
@@ -169,17 +168,17 @@ Everything shown in the challenge scenarios is fictional. The application does
 not request or store names, contact details, passwords, or other personal
 information. Scenario URLs are inert text on reserved example domains, and the
 fictional QR-style poster is not scannable. The only permitted active QR is a
-separate staff-controlled onboarding code for the approved hotspot or allowlisted
-private demo URL. It must not accept visitor-supplied destinations, track scans,
-or expose staff or unrelated services. See
+separate staff-controlled onboarding code for the approved hotspot or approved
+private demo URL on port `4175`. It must not accept visitor-supplied destinations,
+track scans, or expose staff or unrelated services. See
 [`docs/SAFETY_AND_PRIVACY.md`](docs/SAFETY_AND_PRIVACY.md).
 
 Randomness is limited to selecting and ordering reviewed local variants. The
-randomiser accepts a seed internally so tests and prepared replay can
-reproduce an exact deck. Add `?seed=2026` to a local URL to replay a prepared
-unsigned 32-bit seed; invalid values fall back to normal session randomness.
+randomiser accepts a seed internally so tests and prepared replay can reproduce
+an exact deck. Add `?seed=2026` to a local URL to replay a prepared unsigned
+32-bit seed; invalid values fall back to normal session randomness.
 
 ## Current limitations
 
 - An independent operator still needs to complete the runbook rehearsal.
-- The event port and presentation rotation still require OpenDayOps acceptance.
+- The final presentation rotation still requires OpenDayOps acceptance.
