@@ -135,3 +135,11 @@ visitor**, and start it again from staff controls.
 
 Close the demo tab, press Ctrl+C once in the server terminal, and confirm the
 process exits. No visitor-data clean-up is needed because none is persisted.
+
+## Gate sign-off
+
+After an independent operator completes this runbook on the intended booth
+machine, record the measured instruction timing and each human check in
+`docs/OPEN_DAY_ACCEPTANCE.md`. OpenDayOps must then record and accept the event
+port and presentation rotation in the same acceptance record. Development and
+automated-test ports are not event allocations.

@@ -23,6 +23,7 @@
 - [x] Test static production serving and verify no unexpected network requests
 - [x] Complete a 10-minute burn-in with no uncaught errors
 - [ ] Have someone unfamiliar with the code operate the demo from the runbook
+  and complete `docs/OPEN_DAY_ACCEPTANCE.md`
 
 ## Open Day readiness gates
 
@@ -31,6 +32,9 @@ instructions test clearly within 10–20 seconds, reset and offline replay work,
 privacy/safety and staff operation are independently verified, keyboard and touch
 work, the 10-minute burn-in passes, and the event port plus presentation rotation
 are formally accepted and recorded by OpenDayOps.
+
+Human rehearsal and OpenDayOps acceptance are recorded in
+`docs/OPEN_DAY_ACCEPTANCE.md`.
 
 Deferred ideas include generated content, live URL checking, real email ingestion,
 visitor submissions, leaderboards, accounts, cloud services, threat intelligence,

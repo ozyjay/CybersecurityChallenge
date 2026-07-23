@@ -2,6 +2,7 @@
 
 This file records technical rehearsal evidence. It does not replace independent
 staff operation, OpenDayOps acceptance, or the event readiness decision.
+Those external gates are captured in `docs/OPEN_DAY_ACCEPTANCE.md`.
 
 ## Burn-in gate decision — 23 July 2026
 

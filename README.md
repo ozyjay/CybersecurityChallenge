@@ -20,7 +20,9 @@ replay. Phase 4 adds production-build browser journeys for visitor, keyboard,
 touch, compact viewport, reduced-motion, offline, staff, replay, reset, repeated
 cycle, runtime-network, and port-policy behaviour, plus a timed burn-in runner.
 
-The project is **not yet Open Day ready**. No formal event port has been allocated.
+The project is **not yet Open Day ready**. Complete the independent rehearsal and
+OpenDayOps fields in `docs/OPEN_DAY_ACCEPTANCE.md`; no formal event port has been
+allocated.
 
 ## Local setup
 

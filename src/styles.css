@@ -121,7 +121,10 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--yellow); outlin
 .shift-value strong { font-size: 2rem; line-height: 1; }
 .shift-value span { font-size: .75rem; font-weight: 800; text-transform: uppercase; }
 .alphabet-guide { display: grid; gap: .25rem; margin-bottom: 1rem; overflow-x: auto; color: #173d52; font-size: clamp(.7rem, 1.4vw, 1rem); letter-spacing: .12em; }
-.letter-keypad { display: grid; grid-template-columns: repeat(9, minmax(42px, 1fr)); gap: .4rem; }
+.letter-keypad { max-width: 900px; display: grid; gap: .4rem; margin: auto; }
+.letter-keypad-row { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: .4rem; }
+.letter-keypad-row:nth-child(2) { width: 90%; grid-template-columns: repeat(9, minmax(0, 1fr)); margin-inline: auto; }
+.letter-keypad-row:nth-child(3) { width: 70%; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-inline: auto; }
 .letter-keypad button, .polybius-grid button, .keyword-options button, .cipher-backspace { min-height: 48px; color: white; border: 2px solid #315b6d; border-radius: 9px; background: #173d52; font-weight: 850; }
 .letter-keypad button:disabled, .polybius-grid button:disabled { opacity: .5; }
 .cipher-backspace { width: 100%; margin-top: .7rem; }
@@ -181,6 +184,6 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--yellow); outlin
 footer { padding: 1rem; color: var(--muted); text-align: center; font-size: .82rem; border-top: 1px solid var(--line); }
 @media (max-width: 1050px) { .scenario-picker { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 850px) { .game-layout { grid-template-columns: 1fr; } .action-panel { position: static; } .evidence-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 560px) { .site-header { align-items: flex-start; } .quiet-button { max-width: 150px; } .task-heading { align-items: stretch; flex-direction: column; } .session-indicators { align-self: flex-start; flex-wrap: wrap; } .clue-counter { align-self: flex-start; } .evidence-grid { grid-template-columns: 1fr; } .main-content { padding: 1rem; } .replay-banner { align-items: flex-start; flex-direction: column; gap: 0; } .letter-keypad { grid-template-columns: repeat(6, 1fr); } .keyword-options { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .site-header { align-items: flex-start; } .quiet-button { max-width: 150px; } .task-heading { align-items: stretch; flex-direction: column; } .session-indicators { align-self: flex-start; flex-wrap: wrap; } .clue-counter { align-self: flex-start; } .evidence-grid { grid-template-columns: 1fr; } .main-content { padding: 1rem; } .replay-banner { align-items: flex-start; flex-direction: column; gap: 0; } .letter-keypad, .letter-keypad-row { gap: .2rem; } .letter-keypad button { padding-inline: .15rem; font-size: .85rem; } .keyword-options { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .scenario-picker { grid-template-columns: 1fr; } .scenario-choice { min-height: 170px; } }
 @media (prefers-reduced-motion: no-preference) { button { transition: transform .12s ease, background-color .12s ease, border-color .12s ease; } }

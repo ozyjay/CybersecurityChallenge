@@ -97,6 +97,8 @@ describe("visitor journeys", () => {
         expect(decoder.getByRole("button", { name: keyword })).toHaveAttribute("aria-pressed", "false");
         await user.click(decoder.getByRole("button", { name: keyword }));
       } else if (scenario.content.cipherType === "atbash") {
+        const keyboard = within(decoder.getByRole("group", { name: /qwerty letter keyboard/i }));
+        expect(keyboard.getAllByRole("button").map((button) => button.textContent).join("")).toBe("QWERTYUIOPASDFGHJKLZXCVBNM");
         for (const letter of word) await user.click(decoder.getByRole("button", { name: letter }));
       } else if (scenario.content.cipherType === "polybius") {
         for (const pair of cipherWords[wordIndex].split("-")) await user.click(decoder.getByRole("button", { name: new RegExp(`^${pair},`) }));

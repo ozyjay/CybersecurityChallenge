@@ -48,7 +48,8 @@ test("cipher families provide method-specific controls", async ({ page }) => {
 
   await page.getByRole("button", { name: /tap to begin/i }).click();
   await page.getByRole("button", { name: /mirror the alphabet/i }).click();
-  await expect(page.getByLabel(/atbash cipher decoder/i).getByRole("button", { name: "Z" })).toBeVisible();
+  const atbashKeyboard = page.getByRole("group", { name: /qwerty letter keyboard/i });
+  await expect(atbashKeyboard.getByRole("button")).toHaveText(["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"]);
   await page.getByRole("button", { name: /reset for next visitor/i }).click();
 
   await page.getByRole("button", { name: /tap to begin/i }).click();

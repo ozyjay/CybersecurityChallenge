@@ -15,6 +15,7 @@ type Props = {
 };
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const keyboardRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 
 export function CipherScenario(props: Props) {
   const { scenario, shift, wordIndex, draft, keyword, interactive } = props;
@@ -30,9 +31,11 @@ export function CipherScenario(props: Props) {
     preview = keyword ? decodeVigenere(content.ciphertext, keyword).split(" ")[wordIndex] ?? "_" : "Choose a keyword";
   }
 
-  const letterButtons = (letters: string, className: string) => (
-    <div className={className} aria-label="Letter choices">
-      {[...letters].map((letter) => <button key={letter} type="button" disabled={!interactive || draft.length >= targetLength} onClick={() => props.onLetter(letter)}>{letter}</button>)}
+  const letterKeyboard = (
+    <div className="letter-keypad" role="group" aria-label="QWERTY letter keyboard">
+      {keyboardRows.map((row) => <div className="letter-keypad-row" key={row}>
+        {[...row].map((letter) => <button key={letter} type="button" disabled={!interactive || draft.length >= targetLength} onClick={() => props.onLetter(letter)}>{letter}</button>)}
+      </div>)}
     </div>
   );
 
@@ -58,7 +61,7 @@ export function CipherScenario(props: Props) {
         {content.cipherType === "atbash" && <section aria-labelledby="cipher-tool-title">
           <h2 id="cipher-tool-title">Use the mirrored alphabet</h2>
           <div className="alphabet-guide" aria-label="Atbash alphabet guide"><code>{alphabet}</code><code>{[...alphabet].reverse().join("")}</code></div>
-          {letterButtons([...alphabet].reverse().join(""), "letter-keypad")}
+          {letterKeyboard}
           <button className="cipher-backspace" type="button" disabled={!interactive || !draft} onClick={props.onBackspace}>Remove last letter</button>
         </section>}
 
