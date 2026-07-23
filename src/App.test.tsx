@@ -87,7 +87,10 @@ describe("visitor journeys", () => {
     const plaintextWords = scenario.content.plaintext.split(" ");
     const cipherWords = scenario.content.ciphertext.split(" ");
     for (const [wordIndex, word] of plaintextWords.entries()) {
-      if (scenario.content.cipherType === "atbash") {
+      if (scenario.content.cipherType === "caesar" && wordIndex > 0) {
+        expect(decoder.getByText("0", { selector: ".shift-value strong" })).toBeInTheDocument();
+        for (let step = 0; step < scenario.content.shift; step += 1) await user.click(decoder.getByRole("button", { name: /next shift/i }));
+      } else if (scenario.content.cipherType === "atbash") {
         for (const letter of word) await user.click(decoder.getByRole("button", { name: letter }));
       } else if (scenario.content.cipherType === "polybius") {
         for (const pair of cipherWords[wordIndex].split("-")) await user.click(decoder.getByRole("button", { name: new RegExp(`^${pair},`) }));
