@@ -47,20 +47,24 @@ npm run test:e2e            # build and run production-browser journeys
 npm run test:burn-in         # build and run the 60-minute stability exercise
 ```
 
-For a simpler Windows PowerShell workflow, use the root-level wrappers:
+For a simpler Windows PowerShell workflow, use the wrappers in `scripts/`:
 
 ```powershell
-.\setup.ps1
-.\test.ps1
-.\test.ps1 -BurnInMinutes 60
-.\run.ps1 -AppPort 4175
+.\scripts\setup.ps1
+.\scripts\test.ps1
+.\scripts\test.ps1 -BurnInMinutes 60
+.\scripts\run.ps1 -AppPort 4175
+.\scripts\stop.ps1 -AppPort 4175
 ```
 
-`setup.ps1` installs the locked dependencies and Playwright-managed Chromium.
-`test.ps1` runs safety, unit, build, and production-browser checks; burn-in is
-only included when `-BurnInMinutes` is supplied. `run.ps1` builds and serves
+`scripts/setup.ps1` installs the locked dependencies and Playwright-managed
+Chromium. `scripts/test.ps1` runs safety, unit, build, and production-browser
+checks; burn-in is only included when `-BurnInMinutes` is supplied.
+`scripts/run.ps1` builds and serves
 `dist/`, requires an explicit permitted port, and fails if that port is occupied.
 Use `-SkipBuild` only when the existing production build is known to be current.
+`scripts/stop.ps1` only stops a listener verified as this repository's Vite
+server and refuses to terminate unrelated software on the requested port.
 
 Project scripts launch the checked-in dependency versions from `node_modules`
 through the active Node executable. They do not rely on `npx`, globally installed

@@ -13,9 +13,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "scripts\powershell-tools.ps1")
+$projectRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "powershell-tools.ps1")
 
-Push-Location $PSScriptRoot
+Push-Location $projectRoot
 try {
   $env:APP_HOST = $AppHost
   $env:APP_PORT = [string]$AppPort

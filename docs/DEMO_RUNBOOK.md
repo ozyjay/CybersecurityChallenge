@@ -31,7 +31,7 @@ npm run test:e2e
 On Windows PowerShell, the equivalent single command is:
 
 ```powershell
-.\test.ps1
+.\scripts\test.ps1
 ```
 
 The browser suite uses isolated local port `4174` by default and fails if it is
@@ -53,8 +53,17 @@ npm run test:burn-in
 On Windows PowerShell:
 
 ```powershell
-.\test.ps1 -BurnInMinutes 60
+.\scripts\test.ps1 -BurnInMinutes 60
 ```
+
+Start and stop the production build on the formally approved event port:
+
+```powershell
+.\scripts\run.ps1 -AppPort 4175
+.\scripts\stop.ps1 -AppPort 4175
+```
+
+Replace `4175` with the port recorded by OpenDayOps.
 
 It runs for 60 minutes by default, repeatedly completes a visitor case, exercises
 replay interruption every ten cycles, and fails on page errors, console errors or
