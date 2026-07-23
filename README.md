@@ -57,9 +57,10 @@ For a simpler Windows PowerShell workflow, use the wrappers in `scripts/`:
 .\scripts\stop.ps1
 ```
 
-`scripts/setup.ps1` installs the locked dependencies and Playwright-managed
-Chromium. `scripts/test.ps1` runs safety, unit, build, and production-browser
-checks; burn-in is only included when `-BurnInMinutes` is supplied.
+`scripts/setup.ps1` first stops this repository's running Vite servers so Windows
+can safely replace native dependencies, then installs the locked dependencies
+and Playwright-managed Chromium. `scripts/test.ps1` runs safety, unit, build, and
+production-browser checks; burn-in is only included when `-BurnInMinutes` is supplied.
 `scripts/run.ps1` builds and serves
 `dist/`, requires an explicit permitted port, and fails if that port is occupied.
 Use `-SkipBuild` only when the existing production build is known to be current.

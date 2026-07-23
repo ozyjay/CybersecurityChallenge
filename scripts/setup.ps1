@@ -11,6 +11,10 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 
 Push-Location $projectRoot
 try {
+  Write-Host ""
+  Write-Host "==> Stop running demo servers before replacing dependencies" -ForegroundColor Cyan
+  & (Join-Path $PSScriptRoot "stop.ps1")
+
   Invoke-NpmCommand -Label "Install locked project dependencies" -Arguments @("ci")
 
   if (-not $SkipBrowser) {

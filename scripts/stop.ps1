@@ -17,7 +17,7 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 $listeners = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue)
 if ($listeners.Count -eq 0) {
   Write-Host "No listening TCP servers were found." -ForegroundColor Yellow
-  exit 0
+  return
 }
 
 $expectedVitePath = Join-Path $projectRoot "node_modules\vite\bin\vite.js"
@@ -40,7 +40,7 @@ $projectServers = @(
 
 if ($projectServers.Count -eq 0) {
   Write-Host "No running Vite servers belong to this demo." -ForegroundColor Yellow
-  exit 0
+  return
 }
 
 $stoppedProcessIds = @()
@@ -56,7 +56,7 @@ foreach ($server in $projectServers) {
 }
 
 if ($stoppedProcessIds.Count -eq 0) {
-  exit 0
+  return
 }
 
 $deadline = [DateTime]::UtcNow.AddSeconds(5)
