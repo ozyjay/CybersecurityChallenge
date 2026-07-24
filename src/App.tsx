@@ -146,7 +146,9 @@ export default function App({ seed, timerSeconds = 45, replayStepMilliseconds = 
         <a className="brand" href="#main" aria-label="Can You Spot the Scam? home">Can You Spot the Scam?</a>
         <div className="header-actions">
           {resetButton}
-          <button className="staff-button" type="button" onClick={() => setStaffOpen((open) => !open)} aria-expanded={staffOpen}>Staff</button>
+          <button className="staff-button" type="button" disabled aria-label="Staff controls unavailable">
+            Staff <span aria-hidden="true">· Unavailable</span>
+          </button>
         </div>
       </header>
 

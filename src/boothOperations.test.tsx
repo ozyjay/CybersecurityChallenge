@@ -16,11 +16,25 @@ function selectReplayScenario(title: RegExp) {
   fireEvent.change(select, { target: { value: option.value } });
 }
 
+function openStaffControls() {
+  fireEvent.keyDown(window, { key: "s", ctrlKey: true, altKey: true });
+}
+
 async function advanceReplayStep(milliseconds: number) {
   await act(async () => vi.advanceTimersByTime(milliseconds));
 }
 
 describe("staff controls", () => {
+  it("keeps the visitor-facing staff button disabled", async () => {
+    const user = userEvent.setup();
+    render(<App seed={5} />);
+    const staffButton = screen.getByRole("button", { name: /staff controls unavailable/i });
+
+    expect(staffButton).toBeDisabled();
+    await user.click(staffButton);
+    expect(screen.queryByRole("dialog", { name: /staff controls/i })).not.toBeInTheDocument();
+  });
+
   it("opens with the keyboard shortcut and filters visitor difficulty", async () => {
     const user = userEvent.setup();
     render(<App seed={5} />);
@@ -38,11 +52,11 @@ describe("staff controls", () => {
   it("starts a selected case and returns to attract mode without terminal commands", async () => {
     const user = userEvent.setup();
     render(<App seed={9} />);
-    await user.click(screen.getByRole("button", { name: /^staff$/i }));
+    fireEvent.keyDown(window, { key: "s", ctrlKey: true, altKey: true });
     await user.selectOptions(screen.getByRole("combobox", { name: /prepared scenario/i }), screen.getByRole("option", { name: /premium campus wi-fi poster/i }));
     await user.click(screen.getByRole("button", { name: /start selected case/i }));
     expect(screen.getByRole("heading", { name: /premium campus wi-fi poster/i })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /^staff$/i }));
+    fireEvent.keyDown(window, { key: "s", ctrlKey: true, altKey: true });
     await user.click(screen.getByRole("button", { name: /return to attract screen/i }));
     expect(screen.getByRole("button", { name: /tap to begin/i })).toBeInTheDocument();
   });
@@ -63,7 +77,7 @@ describe("optional timer", () => {
   it("supports timer-off and relaxed modes", async () => {
     const user = userEvent.setup();
     const { unmount } = render(<App seed={12} timerSeconds={4} />);
-    await user.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     await user.click(screen.getByRole("checkbox", { name: /timer enabled/i }));
     await user.click(screen.getByRole("button", { name: /close staff controls/i }));
     await openFirstCase(user);
@@ -72,7 +86,7 @@ describe("optional timer", () => {
 
     unmount();
     render(<App seed={12} timerSeconds={4} />);
-    await user.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     await user.click(screen.getByRole("checkbox", { name: /relaxed 90-second timer/i }));
     await user.click(screen.getByRole("button", { name: /close staff controls/i }));
     await openFirstCase(user);
@@ -94,7 +108,7 @@ describe("optional timer", () => {
   it("lets a cipher visitor continue after time expires", async () => {
     vi.useFakeTimers();
     render(<App seed={12} timerSeconds={1} />);
-    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     selectReplayScenario(/decode the secret message/i);
     fireEvent.click(screen.getByRole("button", { name: /start selected case/i }));
     await act(async () => vi.advanceTimersByTime(1000));
@@ -108,7 +122,7 @@ describe("prepared replay", () => {
   it("runs the cipher-specific reveal and result path", async () => {
     vi.useFakeTimers();
     render(<App seed={21} replayStepMilliseconds={100} />);
-    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     selectReplayScenario(/decode the secret message/i);
     fireEvent.click(screen.getByRole("button", { name: /start prepared replay/i }));
     await advanceReplayStep(100);
@@ -120,7 +134,7 @@ describe("prepared replay", () => {
   it("progresses through a deterministic example and loops to another case", async () => {
     vi.useFakeTimers();
     render(<App seed={21} replayStepMilliseconds={100} />);
-    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     selectReplayScenario(/urgent account warning/i);
     fireEvent.click(screen.getByRole("button", { name: /start prepared replay/i }));
     expect(screen.getByText(/automated local example/i)).toBeInTheDocument();
@@ -142,7 +156,7 @@ describe("prepared replay", () => {
   it("returns to attract mode immediately on visitor input", async () => {
     vi.useFakeTimers();
     render(<App seed={21} replayStepMilliseconds={100} />);
-    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     selectReplayScenario(/urgent account warning/i);
     fireEvent.click(screen.getByRole("button", { name: /start prepared replay/i }));
     expect(screen.getByText(/automated local example/i)).toBeInTheDocument();
@@ -154,7 +168,7 @@ describe("prepared replay", () => {
   it("can run once and return to attract mode", async () => {
     vi.useFakeTimers();
     render(<App seed={21} replayStepMilliseconds={50} />);
-    fireEvent.click(screen.getByRole("button", { name: /^staff$/i }));
+    openStaffControls();
     fireEvent.click(screen.getByRole("checkbox", { name: /loop automatically/i }));
     fireEvent.click(screen.getByRole("button", { name: /start prepared replay/i }));
     for (let step = 0; step < 6; step += 1) await advanceReplayStep(50);

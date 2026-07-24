@@ -22,7 +22,7 @@ test("@burn-in repeated visitor and replay cycles remain stable", async ({ page 
     cycles += 1;
 
     if (cycles % 10 === 0) {
-      await page.getByRole("button", { name: /^staff$/i }).click();
+      await page.keyboard.press("Control+Alt+S");
       await page.getByRole("button", { name: /start prepared replay/i }).click();
       await expect(page.getByText(/automated local example/i)).toBeVisible();
       await page.mouse.click(2, 2);

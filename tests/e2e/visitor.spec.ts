@@ -69,8 +69,7 @@ test("keyboard-only visitor navigation reaches scenario evidence", async ({ page
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: /can you spot the scam/i })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: /^staff$/i })).toBeFocused();
-  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: /staff controls unavailable/i })).toBeDisabled();
   await expect(page.getByRole("button", { name: /tap to begin/i })).toBeFocused();
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: /urgent account warning/i }).focus();

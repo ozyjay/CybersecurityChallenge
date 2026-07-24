@@ -149,7 +149,8 @@ for next visitor** clears this temporary exclusion completely. Refresh the page 
 the browser ever becomes unresponsive. No generated or downloaded scenario text
 is used.
 
-Open the staff panel with the unobtrusive **Staff** button or `Ctrl+Alt+S`.
+The visible **Staff · Unavailable** button is disabled. Open the staff panel with
+`Ctrl+Alt+S`.
 Staff can configure timing, optional sound, difficulty, exact scenario selection,
 attract mode, next-visitor reset, and prepared replay. Replay is clearly labelled,
 uses only the seeded local deck, and stops on any key press or screen tap.

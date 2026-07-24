@@ -23,6 +23,8 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--yellow); outlin
 .brand { color: white; font-weight: 850; font-size: clamp(1.1rem, 3vw, 1.55rem); text-decoration: none; letter-spacing: -.03em; }
 .header-actions { display: flex; align-items: center; gap: .65rem; }
 .staff-button, .icon-button { min-height: 42px; padding: .5rem .8rem; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; background: #0b1e2c; font-weight: 750; }
+.staff-button:disabled { cursor: not-allowed; opacity: .72; border-style: dashed; }
+.staff-button:disabled span { font-size: .75rem; font-weight: 650; }
 .icon-button { width: 42px; padding: 0; color: white; font-size: 1.5rem; }
 .main-content { width: min(1400px, 100%); margin: auto; padding: clamp(1.25rem, 4vw, 4rem); flex: 1; }
 .panel { max-width: 850px; margin: 3vh auto; padding: clamp(1.5rem, 5vw, 4.5rem); text-align: center; border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(145deg, rgba(20, 56, 73, .96), rgba(9, 29, 43, .96)); box-shadow: 0 24px 80px rgba(0,0,0,.28); }

@@ -126,7 +126,8 @@ unchanged.
 
 ## Staff controls
 
-Open the panel using **Staff** or `Ctrl+Alt+S`; press Escape to close it.
+The visible **Staff · Unavailable** button is disabled. Open the panel using
+`Ctrl+Alt+S`; press Escape to close it.
 
 - **Timer enabled**: standard 45-second investigation timer.
 - **Relaxed 90-second timer**: doubles the timer without changing scoring.

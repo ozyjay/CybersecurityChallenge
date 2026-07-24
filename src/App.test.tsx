@@ -116,16 +116,12 @@ describe("visitor journeys", () => {
     render(<App seed={42} />);
     await user.tab();
     await user.tab();
-    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
-    await user.tab();
     expect(screen.getByRole("button", { name: /tap to begin/i })).toHaveFocus();
     await user.keyboard("{Enter}");
     await user.tab();
     expect(screen.getByRole("link", { name: /can you spot the scam/i })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
-    await user.tab();
-    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
     await user.tab();
     const firstCase = screen.getAllByRole("button", { name: /play this case/i })[0];
     expect(firstCase).toHaveFocus();
@@ -134,8 +130,6 @@ describe("visitor journeys", () => {
     expect(screen.getByRole("link", { name: /can you spot the scam/i })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole("button", { name: /reset for next visitor/i })).toHaveFocus();
-    await user.tab();
-    expect(screen.getByRole("button", { name: /staff/i })).toHaveFocus();
     await user.tab();
     expect(screen.getAllByRole("button", { pressed: false })[0]).toHaveFocus();
   });

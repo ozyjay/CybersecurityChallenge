@@ -19,7 +19,7 @@ test("staff controls filter cases and directly start a prepared scenario", async
 test("prepared replay advances, is labelled, and stops on visitor input", async ({ page }) => {
   const runtime = guardLocalRuntime(page);
   await page.goto("/?seed=21");
-  await page.getByRole("button", { name: /^staff$/i }).click();
+  await page.keyboard.press("Control+Alt+S");
   const preparedScenario = page.getByRole("combobox", { name: /prepared scenario/i });
   const warningValue = await preparedScenario.locator("option", { hasText: /urgent account warning/i }).getAttribute("value");
   await preparedScenario.selectOption(warningValue!);
@@ -42,7 +42,7 @@ test("repeated reset and replay interruption remains clean", async ({ page }) =>
     await page.getByRole("button", { name: /reset for next visitor/i }).click();
   }
   for (let cycle = 0; cycle < 3; cycle += 1) {
-    await page.getByRole("button", { name: /^staff$/i }).click();
+    await page.keyboard.press("Control+Alt+S");
     await page.getByRole("button", { name: /start prepared replay/i }).click();
     await expect(page.getByText(/automated local example/i)).toBeVisible();
     await page.mouse.click(2, 2);
