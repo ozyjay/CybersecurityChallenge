@@ -82,6 +82,15 @@ booth-computer address and each usable private phone address, prioritising the
 Windows Mobile Hotspot adapter. It never prints loopback or automatic
 `169.254.x.x` fallback addresses as phone destinations.
 
+A staff-controlled onboarding QR may encode either the approved Windows hotspot
+connection payload or the printed private demo URL. It must be generated from
+explicit event configuration, displayed with the human-readable SSID or URL,
+and kept separate from the fictional campus Wi-Fi scenario. The scenario's
+QR-style artwork remains deliberately non-scannable. Keep a printed SSID and
+typed private URL as the no-QR fallback. See
+[`docs/SAFETY_AND_PRIVACY.md`](docs/SAFETY_AND_PRIVACY.md) for the allowlist,
+credential-handling, verification, and shutdown requirements.
+
 If Windows Firewall blocks hotspot phones, manage the demo's narrowly scoped
 rule:
 
@@ -149,18 +158,22 @@ for next visitor** clears this temporary exclusion completely. Refresh the page 
 the browser ever becomes unresponsive. No generated or downloaded scenario text
 is used.
 
-The visible **Staff · Unavailable** button is disabled. Open the staff panel with
-`Ctrl+Alt+S`.
+Open `/staff` on the booth display, then open the staff panel with the
+unobtrusive **Staff** button or `Ctrl+Alt+S`. The visitor route does not render
+the staff button or panel.
 Staff can configure timing, optional sound, difficulty, exact scenario selection,
 attract mode, next-visitor reset, and prepared replay. Replay is clearly labelled,
 uses only the seeded local deck, and stops on any key press or screen tap.
 
 ## Privacy and safety
 
-Everything shown is fictional. The application does not request or store names,
-contact details, passwords, or other personal information. Displayed URLs are
-inert text on reserved example domains. It has no analytics, tracking, network
-submission, active QR destination, or real login form. See
+Everything shown in the challenge scenarios is fictional. The application does
+not request or store names, contact details, passwords, or other personal
+information. Scenario URLs are inert text on reserved example domains, and the
+fictional QR-style poster is not scannable. The only permitted active QR is a
+separate staff-controlled onboarding code for the approved hotspot or allowlisted
+private demo URL. It must not accept visitor-supplied destinations, track scans,
+or expose staff or unrelated services. See
 [`docs/SAFETY_AND_PRIVACY.md`](docs/SAFETY_AND_PRIVACY.md).
 
 Randomness is limited to selecting and ordering reviewed local variants. The

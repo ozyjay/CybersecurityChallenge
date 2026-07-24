@@ -16,7 +16,8 @@ initial state.
 - `src/scenarios/randomise.ts` selects one variant per family and shuffles the
   deck through a deterministic seeded pseudo-random generator.
 - `src/components/StaffControls.tsx` provides session-only booth settings and
-  direct prepared-case controls.
+  direct prepared-case controls on `/staff`; the visitor route does not render
+  the staff button or panel.
 - `src/hooks/useCountdown.ts` owns cancellable timer behaviour.
 - `src/hooks/usePreparedReplay.ts` coordinates deterministic replay and
   capture-level visitor interruption.

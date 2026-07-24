@@ -1,9 +1,14 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 
-afterEach(() => vi.useRealTimers());
+beforeEach(() => window.history.replaceState({}, "", "/staff"));
+
+afterEach(() => {
+  vi.useRealTimers();
+  window.history.replaceState({}, "", "/");
+});
 
 async function openFirstCase(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: /tap to begin/i }));
@@ -25,14 +30,14 @@ async function advanceReplayStep(milliseconds: number) {
 }
 
 describe("staff controls", () => {
-  it("keeps the visitor-facing staff button disabled", async () => {
+  it("opens from the staff-route button", async () => {
     const user = userEvent.setup();
     render(<App seed={5} />);
-    const staffButton = screen.getByRole("button", { name: /staff controls unavailable/i });
+    const staffButton = screen.getByRole("button", { name: /^staff$/i });
 
-    expect(staffButton).toBeDisabled();
+    expect(staffButton).toBeEnabled();
     await user.click(staffButton);
-    expect(screen.queryByRole("dialog", { name: /staff controls/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /staff controls/i })).toBeInTheDocument();
   });
 
   it("opens with the keyboard shortcut and filters visitor difficulty", async () => {

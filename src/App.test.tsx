@@ -114,6 +114,7 @@ describe("visitor journeys", () => {
   it("offers keyboard-operable scenario and evidence controls", async () => {
     const user = userEvent.setup();
     render(<App seed={42} />);
+    expect(screen.queryByRole("button", { name: /staff/i })).not.toBeInTheDocument();
     await user.tab();
     await user.tab();
     expect(screen.getByRole("button", { name: /tap to begin/i })).toHaveFocus();

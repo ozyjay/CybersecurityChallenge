@@ -3,7 +3,7 @@ import { guardLocalRuntime } from "./runtimeGuard";
 
 test("staff controls filter cases and directly start a prepared scenario", async ({ page }) => {
   const runtime = guardLocalRuntime(page);
-  await page.goto("/?seed=9");
+  await page.goto("/staff?seed=9");
   await page.keyboard.press("Control+Alt+s");
   await expect(page.getByRole("dialog", { name: /staff controls/i })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: /sound cues/i })).not.toBeChecked();
@@ -18,8 +18,8 @@ test("staff controls filter cases and directly start a prepared scenario", async
 
 test("prepared replay advances, is labelled, and stops on visitor input", async ({ page }) => {
   const runtime = guardLocalRuntime(page);
-  await page.goto("/?seed=21");
-  await page.keyboard.press("Control+Alt+S");
+  await page.goto("/staff?seed=21");
+  await page.getByRole("button", { name: /^staff$/i }).click();
   const preparedScenario = page.getByRole("combobox", { name: /prepared scenario/i });
   const warningValue = await preparedScenario.locator("option", { hasText: /urgent account warning/i }).getAttribute("value");
   await preparedScenario.selectOption(warningValue!);
@@ -35,7 +35,7 @@ test("prepared replay advances, is labelled, and stops on visitor input", async 
 
 test("repeated reset and replay interruption remains clean", async ({ page }) => {
   const runtime = guardLocalRuntime(page);
-  await page.goto("/?seed=100");
+  await page.goto("/staff?seed=100");
   for (let cycle = 0; cycle < 8; cycle += 1) {
     await page.getByRole("button", { name: /tap to begin/i }).click();
     await page.getByRole("button", { name: /urgent account warning/i }).click();
